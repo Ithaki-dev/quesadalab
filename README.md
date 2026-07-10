@@ -35,6 +35,24 @@ Este proyecto es desarrollado por Robert Quesada junto con su padre como una ini
 - Home Assistant
 - Cloudflare
 
-## Estado del proyecto
+# Estado del Proyecto
 
-🚧 En construcción
+| Componente | Estado |
+|------------|--------|
+| Proxmox VE | ✅ |
+| OpenWrt | ✅ |
+| Red | ✅ |
+| DHCP | ✅ |
+| AdGuard Home | ✅ |
+| SSH | ✅ |
+| DNS | ✅ |
+| Docker | ⏳ |
+| Portainer | ⏳ |
+| Homepage | ⏳ |
+| Immich | ⏳ |
+| Jellyfin | ⏳ |
+| Vaultwarden | ⏳ |
+| Grafana | ⏳ |
+| Prometheus | ⏳ |
+| Nextcloud | ⏳ |
+| Home Assistant | ⏳ |
