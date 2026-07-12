@@ -35,19 +35,16 @@ Este proyecto es desarrollado por Robert Quesada junto con su padre como una ini
 - Home Assistant
 - Cloudflare
 
-# Estado del Proyecto
+# Current Infrastructure
 
-| Componente | Estado |
-|------------|--------|
-| Proxmox VE | ✅ |
-| OpenWrt | ✅ |
-| Red | ✅ |
-| DHCP | ✅ |
-| AdGuard Home | ✅ |
-| SSH | ✅ |
-| DNS | ✅ |
-| Docker | ⏳ |
-| Portainer | ⏳ |
+| Component | Technology | Status |
+|-----------|------------|--------|
+| Hypervisor | Proxmox VE 9 | ✅ |
+| Router | OpenWrt | ✅ |
+| DNS | AdGuard Home | ✅ |
+| Container Platform | Docker Engine | ✅ |
+| Container Management | Portainer CE | ✅ |
+| Reverse Proxy | Traefik v3 | ✅ |
 | Homepage | ⏳ |
 | Immich | ⏳ |
 | Jellyfin | ⏳ |
