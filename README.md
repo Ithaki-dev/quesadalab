@@ -48,7 +48,7 @@ Este proyecto es desarrollado por Robert Quesada junto con su padre como una ini
 | Homepage | ⏳ |
 | Immich | ⏳ |
 | Jellyfin | ⏳ |
-| Vaultwarden | ⏳ |
+| Vaultwarden | ✅ |
 | Grafana | ⏳ |
 | Prometheus | ⏳ |
 | Nextcloud | ⏳ |
