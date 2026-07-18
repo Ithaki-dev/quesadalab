@@ -44,9 +44,10 @@ papelera, crecimiento y operación del disco de 500 GB.
 
 ## Cabeceras HTTPS
 
-El middleware `nextcloud-headers` se aplica después de las cabeceras globales y
-establece `SAMEORIGIN`, `noindex, nofollow` y HSTS por 180 días. Esto evita cambiar
-la política de otros servicios publicados por Traefik.
+El middleware `nextcloud-headers` se declara antes de las cabeceras globales para
+que, durante el recorrido inverso de la respuesta, sus valores específicos
+reemplacen `DENY` y la política de robots global. Establece `SAMEORIGIN`,
+`noindex, nofollow` y HSTS por 180 días sin cambiar otros servicios de Traefik.
 
 ```bash
 curl --silent --show-error --head https://nextcloud.lab/login |
