@@ -124,11 +124,10 @@ apply_retention() {
     local -a backups=()
     local index backup_path kept_count
 
-    mapfile -t backups < <(
+    mapfile -d '' -t backups < <(
         find "$DESTINATION" -mindepth 1 -maxdepth 1 -type d \
-            -printf '%f\n' |
-        grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}-[0-9]{2}$' |
-        sort -r
+            -name '????-??-??_??-??-??' -printf '%f\0' |
+        sort -z -r
     )
 
     for ((index = RETENTION; index < ${#backups[@]}; index++)); do
