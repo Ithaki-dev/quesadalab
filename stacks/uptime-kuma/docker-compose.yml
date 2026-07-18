@@ -6,8 +6,12 @@ services:
 
     restart: unless-stopped
 
+    environment:
+      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/quesadalab-root-ca.crt
+
     volumes:
       - /opt/quesadalab/data/uptime-kuma:/app/data
+      - /opt/quesadalab/security/pki/root/root.crt:/etc/ssl/certs/quesadalab-root-ca.crt:ro
 
     networks:
       - proxy
