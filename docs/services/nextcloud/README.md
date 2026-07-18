@@ -4,7 +4,7 @@
 
 Nextcloud atiende hasta cinco usuarios internos en `https://nextcloud.lab`. La
 aplicación usa PostgreSQL, Redis, cron y Traefik. Los archivos de usuarios residen
-en el disco dedicado montado en `/srv/nextcloud-data`.
+en un disco virtual dedicado de 500 GB montado en `/srv/nextcloud-data`.
 
 ## Rutas
 
@@ -23,10 +23,10 @@ Los siguientes valores se aplican una vez, después de verificar el primer backu
 
 ```bash
 docker exec --user www-data nextcloud \
-  php occ config:app:set files default_quota --value='75 GB'
+  php occ config:app:set files default_quota --value='200 GB'
 
 docker exec --user www-data nextcloud \
-  php occ user:setting rquesada files quota '75 GB'
+  php occ user:setting rquesada files quota '200 GB'
 
 docker exec --user www-data nextcloud \
   php occ config:system:set default_phone_region --value=CR
@@ -39,8 +39,10 @@ docker exec --user www-data nextcloud \
 ```
 
 La ventana comienza a las 05:00 UTC (23:00 en Costa Rica) y termina antes del
-backup local de las 03:00. La cuota deja espacio para base de datos, versiones,
-papelera, crecimiento y operación del disco de 500 GB.
+backup local de las 03:00. La cuota predeterminada es de 200 GB por usuario. Las
+cuotas son límites lógicos y no reservan espacio por adelantado; antes de activar
+usuarios adicionales se debe comprobar la capacidad disponible para archivos,
+versiones, papelera, base de datos y operación del disco de 500 GB.
 
 ## Cabeceras HTTPS
 
