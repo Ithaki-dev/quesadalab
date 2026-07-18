@@ -62,12 +62,15 @@ validate_bash() {
 }
 
 compose_requires_env() {
-    grep -Eq '^[[:space:]]*env_file:[[:space:]]*$|^[[:space:]]*-[[:space:]]*\.env[[:space:]]*$' "$1"
+    grep -Eq \
+        '^[[:space:]]*env_file:[[:space:]]*$|^[[:space:]]*-[[:space:]]*\.env[[:space:]]*$|\$\{[A-Za-z_][A-Za-z0-9_]*' \
+        "$1"
 }
 
 validate_compose() {
     local compose_file stack_dir env_file example_file created_env=false
     local -a compose_files=()
+    local -a compose_command=()
 
     if ! docker compose version >/dev/null 2>&1; then
         error "Docker Compose Plugin is not available."
@@ -86,18 +89,29 @@ validate_compose() {
         example_file="${stack_dir}/.env.example"
         created_env=false
 
-        if compose_requires_env "$compose_file" && [[ ! -f "$env_file" ]]; then
+        if [[ ! -f "$env_file" && -f "$example_file" ]]; then
+            cp -- "$example_file" "$env_file"
+            TEMP_ENV_FILES+=("$env_file")
+            created_env=true
+        elif compose_requires_env "$compose_file" && [[ ! -f "$env_file" ]]; then
             if [[ ! -f "$example_file" ]]; then
                 error "Missing .env.example for ${compose_file#"${REPO_ROOT}/"}"
                 continue
             fi
-
-            cp -- "$example_file" "$env_file"
-            TEMP_ENV_FILES+=("$env_file")
-            created_env=true
         fi
 
-        if docker compose --project-directory "$stack_dir" -f "$compose_file" config --quiet; then
+        compose_command=(
+            docker compose
+            --project-directory "$stack_dir"
+        )
+
+        if [[ -f "$env_file" ]]; then
+            compose_command+=(--env-file "$env_file")
+        fi
+
+        compose_command+=( -f "$compose_file" config --quiet )
+
+        if "${compose_command[@]}"; then
             log "OK" "Compose: ${compose_file#"${REPO_ROOT}/"}"
         else
             error "Invalid Compose file: ${compose_file#"${REPO_ROOT}/"}"

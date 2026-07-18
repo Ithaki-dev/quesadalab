@@ -1,0 +1,168 @@
+name: nextcloud
+
+services:
+  db:
+    image: postgres:17.10-trixie
+    container_name: nextcloud-db
+    restart: unless-stopped
+    shm_size: 128mb
+
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      TZ: "${TZ}"
+
+    secrets:
+      - postgres_password
+
+    volumes:
+      - /opt/quesadalab/data/nextcloud/postgres:/var/lib/postgresql/data
+
+    networks:
+      - nextcloud-internal
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+    mem_limit: 768m
+    security_opt:
+      - no-new-privileges:true
+
+  redis:
+    image: redis:7.4.9-alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+
+    command:
+      - redis-server
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+
+    networks:
+      - nextcloud-internal
+
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+    mem_limit: 256m
+    security_opt:
+      - no-new-privileges:true
+
+  app:
+    image: nextcloud:33.0.6-apache
+    container_name: nextcloud
+    restart: unless-stopped
+
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      REDIS_HOST: redis
+      NEXTCLOUD_ADMIN_USER: "${NEXTCLOUD_ADMIN_USER}"
+      NEXTCLOUD_ADMIN_PASSWORD_FILE: /run/secrets/nextcloud_admin_password
+      NEXTCLOUD_DATA_DIR: /var/www/html/data
+      NEXTCLOUD_TRUSTED_DOMAINS: "${NEXTCLOUD_HOST}"
+      TRUSTED_PROXIES: "${TRUSTED_PROXIES}"
+      OVERWRITEHOST: "${NEXTCLOUD_HOST}"
+      OVERWRITEPROTOCOL: https
+      OVERWRITECLIURL: "https://${NEXTCLOUD_HOST}"
+      APACHE_DISABLE_REWRITE_IP: "1"
+      NEXTCLOUD_INIT_HTACCESS: "true"
+      TZ: "${TZ}"
+
+    secrets:
+      - postgres_password
+      - nextcloud_admin_password
+
+    volumes:
+      - /opt/quesadalab/data/nextcloud/html:/var/www/html
+      - /srv/nextcloud-data/user-data:/var/www/html/data
+      - /opt/quesadalab/config/nextcloud/php/zz-quesadalab.ini:/usr/local/etc/php/conf.d/zz-quesadalab.ini:ro
+
+    networks:
+      - proxy
+      - nextcloud-internal
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail --silent --output /dev/null http://localhost/status.php
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+
+    mem_limit: 1536m
+    security_opt:
+      - no-new-privileges:true
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_HOST}`)"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls=true"
+      - "traefik.http.routers.nextcloud.middlewares=nextcloud-dav,lan-only@file,security-headers@file"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.nextcloud-dav.redirectregex.permanent=true"
+      - "traefik.http.middlewares.nextcloud-dav.redirectregex.regex=^https://([^/]+)/\\.well-known/(card|cal)dav$"
+      - "traefik.http.middlewares.nextcloud-dav.redirectregex.replacement=https://$${1}/remote.php/dav/"
+
+  cron:
+    image: nextcloud:33.0.6-apache
+    container_name: nextcloud-cron
+    restart: unless-stopped
+    entrypoint: /cron.sh
+
+    depends_on:
+      app:
+        condition: service_healthy
+
+    environment:
+      TZ: "${TZ}"
+
+    volumes:
+      - /opt/quesadalab/data/nextcloud/html:/var/www/html
+      - /srv/nextcloud-data/user-data:/var/www/html/data
+      - /opt/quesadalab/config/nextcloud/php/zz-quesadalab.ini:/usr/local/etc/php/conf.d/zz-quesadalab.ini:ro
+
+    networks:
+      - nextcloud-internal
+
+    mem_limit: 512m
+    security_opt:
+      - no-new-privileges:true
+
+secrets:
+  postgres_password:
+    file: "${NEXTCLOUD_SECRETS_DIR}/postgres_password"
+  nextcloud_admin_password:
+    file: "${NEXTCLOUD_SECRETS_DIR}/nextcloud_admin_password"
+
+networks:
+  proxy:
+    external: true
+  nextcloud-internal:
+    internal: true
