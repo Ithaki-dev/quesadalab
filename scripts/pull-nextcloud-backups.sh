@@ -122,7 +122,7 @@ promote_sets() {
 
 apply_retention() {
     local -a backups=()
-    local index backup_path
+    local index backup_path kept_count
 
     mapfile -t backups < <(
         find "$DESTINATION" -mindepth 1 -maxdepth 1 -type d \
@@ -137,7 +137,13 @@ apply_retention() {
         rm -rf --one-file-system -- "$backup_path"
     done
 
-    log SUCCESS "Conjuntos válidos conservados en USB: $(( ${#backups[@]} < RETENTION ? ${#backups[@]} : RETENTION ))."
+    kept_count="${#backups[@]}"
+
+    if (( kept_count > RETENTION )); then
+        kept_count="$RETENTION"
+    fi
+
+    log SUCCESS "Conjuntos válidos conservados en USB: ${kept_count}."
 }
 
 main() {
