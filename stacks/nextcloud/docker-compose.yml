@@ -124,7 +124,7 @@ services:
       - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_HOST}`)"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls=true"
-      - "traefik.http.routers.nextcloud.middlewares=nextcloud-dav,lan-only@file,security-headers@file,nextcloud-headers"
+      - "traefik.http.routers.nextcloud.middlewares=nextcloud-dav,lan-only@file,nextcloud-headers,security-headers@file"
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
       - "traefik.http.middlewares.nextcloud-dav.redirectregex.permanent=true"
       - "traefik.http.middlewares.nextcloud-dav.redirectregex.regex=^https://([^/]+)/\\.well-known/(card|cal)dav$"
