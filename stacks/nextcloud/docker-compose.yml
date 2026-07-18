@@ -124,11 +124,15 @@ services:
       - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_HOST}`)"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls=true"
-      - "traefik.http.routers.nextcloud.middlewares=nextcloud-dav,lan-only@file,security-headers@file"
+      - "traefik.http.routers.nextcloud.middlewares=nextcloud-dav,lan-only@file,security-headers@file,nextcloud-headers"
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
       - "traefik.http.middlewares.nextcloud-dav.redirectregex.permanent=true"
       - "traefik.http.middlewares.nextcloud-dav.redirectregex.regex=^https://([^/]+)/\\.well-known/(card|cal)dav$"
       - "traefik.http.middlewares.nextcloud-dav.redirectregex.replacement=https://$${1}/remote.php/dav/"
+      - "traefik.http.middlewares.nextcloud-headers.headers.customresponseheaders.X-Frame-Options=SAMEORIGIN"
+      - "traefik.http.middlewares.nextcloud-headers.headers.customresponseheaders.X-Robots-Tag=noindex, nofollow"
+      - "traefik.http.middlewares.nextcloud-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.nextcloud-headers.headers.stsSeconds=15552000"
 
   cron:
     image: nextcloud:33.0.6-apache
