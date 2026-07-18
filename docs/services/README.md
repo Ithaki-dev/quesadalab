@@ -20,13 +20,13 @@ README.md
 | Docker Engine | ✅ |
 | Portainer | ✅ |
 | Traefik | ✅ |
+| Nextcloud | ✅ |
 
 Future Services
 
 - Homepage
 - Uptime Kuma
 - Immich
-- Nextcloud
 - Vaultwarden
 - Jellyfin
 - Prometheus

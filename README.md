@@ -51,5 +51,5 @@ Este proyecto es desarrollado por Robert Quesada junto con su padre como una ini
 | Vaultwarden | ✅ |
 | Grafana | ⏳ |
 | Prometheus | ⏳ |
-| Nextcloud | ⏳ |
+| Nextcloud | ✅ |
 | Home Assistant | ⏳ |
