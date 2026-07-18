@@ -1,0 +1,11 @@
+[Unit]
+Description=QuesadaLab - Daily Nextcloud Backup Timer
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+AccuracySec=5min
+Unit=backup-nextcloud.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,25 @@
+[Unit]
+Description=QuesadaLab - Nextcloud Backup
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+Environment=NEXTCLOUD_BACKUP_ROOT=/opt/quesadalab/backups/nextcloud
+ExecStart=/opt/quesadalab/scripts/backup-nextcloud.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=12h
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
+NoNewPrivileges=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
