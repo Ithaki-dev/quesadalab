@@ -1,0 +1,33 @@
+[Unit]
+Description=QuesadaLab - Vaultwarden Backup
+Documentation=https://github.com/ithaki-dev/quesadalab
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+
+User=root
+Group=root
+
+WorkingDirectory=/opt/quesadalab
+
+ExecStart=/opt/quesadalab/scripts/backup-vaultwarden.sh
+
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+
+TimeoutStartSec=30min
+
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
+NoNewPrivileges=yes
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

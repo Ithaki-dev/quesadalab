@@ -1,0 +1,46 @@
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER}"
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD}"
+
+      GF_USERS_ALLOW_SIGN_UP: "false"
+
+      GF_SERVER_DOMAIN: "grafana.lab"
+      GF_SERVER_ROOT_URL: "http://grafana.lab"
+
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "true"
+
+    volumes:
+      - /opt/quesadalab/data/grafana:/var/lib/grafana
+      - /opt/quesadalab/config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - /opt/quesadalab/config/grafana/dashboards:/var/lib/grafana/dashboards:ro
+
+    networks:
+      - proxy
+      - monitoring
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+
+      - "traefik.http.routers.grafana.rule=Host(`grafana.lab`)"
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.routers.grafana.middlewares=lan-only@file,security-headers@file"
+
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+
+networks:
+  proxy:
+    external: true
+
+  monitoring:
+    external: true

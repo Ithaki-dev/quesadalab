@@ -1,0 +1,49 @@
+# ==========================
+# Runtime
+# ==========================
+
+data/
+backups/
+logs/
+tmp/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.pfx
+*.p12
+*.secret
+secrets/
+
+# Vaultwarden
+*.sqlite3
+*.sqlite
+attachments/
+sends/
+
+# Certificates
+security/pki/private/
+security/**/*.key
+
+# Backups
+*.tar
+*.tar.gz
+*.bak
+*.bak-*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local backup copies
+*.bak
+*.bak-*
+*.backup
+*.old
