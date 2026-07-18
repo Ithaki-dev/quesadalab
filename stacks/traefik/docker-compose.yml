@@ -1,0 +1,79 @@
+services:
+  traefik:
+    image: traefik:v3.7
+    container_name: traefik
+    restart: unless-stopped
+
+    command:
+      - --api.dashboard=true
+      - --api.insecure=false
+
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=proxy
+
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.internal.address=:8080
+
+      - --log.level=INFO
+      - --accesslog=true
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/quesadalab/data/traefik/dynamic:/etc/traefik/dynamic:ro
+      - /opt/quesadalab/data/traefik/tls:/etc/traefik/tls:ro
+
+    networks:
+      - proxy
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+
+      # Dashboard interno para comunicación entre contenedores
+      - "traefik.http.routers.traefik-internal.rule=Host(`traefik`)"
+      - "traefik.http.routers.traefik-internal.entrypoints=internal"
+      - "traefik.http.routers.traefik-internal.service=api@internal"
+
+      # Dashboard HTTP actual
+      - "traefik.http.routers.traefik.rule=Host(`traefik.lab`)"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.middlewares=lan-only@file,security-headers@file"
+
+  whoami:
+    image: traefik/whoami:v1.11
+    container_name: whoami
+    restart: unless-stopped
+
+    networks:
+      - proxy
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+
+      # Router HTTP existente
+      - "traefik.http.routers.whoami.rule=Host(`whoami.lab`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.http.routers.whoami.middlewares=lan-only@file,security-headers@file"
+
+      # Router HTTPS de prueba
+      - "traefik.http.routers.whoami-secure.rule=Host(`whoami.lab`)"
+      - "traefik.http.routers.whoami-secure.entrypoints=websecure"
+      - "traefik.http.routers.whoami-secure.tls=true"
+      - "traefik.http.routers.whoami-secure.middlewares=lan-only@file,security-headers@file"
+
+      - "traefik.http.services.whoami.loadbalancer.server.port=80"
+
+networks:
+  proxy:
+    external: true

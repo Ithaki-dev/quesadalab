@@ -1,0 +1,33 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: homepage.lab,192.168.1.30:3000
+
+    volumes:
+      - /opt/quesadalab/data/homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+    networks:
+      - proxy
+
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.homepage.rule=Host(`homepage.lab`)"
+      - "traefik.http.routers.homepage.entrypoints=web"
+
+      - "traefik.http.routers.homepage.middlewares=lan-only@file,security-headers@file"
+
+      - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+
+networks:
+  proxy:
+    external: true

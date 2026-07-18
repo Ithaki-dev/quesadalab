@@ -1,0 +1,12 @@
+[Unit]
+Description=QuesadaLab - Daily Vaultwarden Backup Timer
+Documentation=https://github.com/ithaki-dev/quesadalab
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+AccuracySec=1min
+Unit=backup-vaultwarden.service
+
+[Install]
+WantedBy=timers.target

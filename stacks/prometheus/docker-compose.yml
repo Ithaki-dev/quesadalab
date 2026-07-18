@@ -1,0 +1,36 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.enable-lifecycle
+
+    volumes:
+      - /opt/quesadalab/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /opt/quesadalab/data/prometheus:/prometheus
+
+    networks:
+      - proxy
+      - monitoring
+
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.lab`)"
+      - "traefik.http.routers.prometheus.entrypoints=web"
+
+      - "traefik.http.routers.prometheus.middlewares=lan-only@file,security-headers@file"
+
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+
+networks:
+  proxy:
+    external: true
+
+  monitoring:
+    name: monitoring
