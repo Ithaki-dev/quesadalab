@@ -21,6 +21,9 @@ ser copiados al almacenamiento USB `qlab-usb-backup` mediante una tarea iniciada
 desde Proxmox con una llave limitada a `rrsync -ro`. La llave no permite shell,
 escritura ni acceso fuera del directorio local de respaldos.
 
+La preparacion, sustitucion y diagnostico del medio se documentan en
+`docs/runbooks/usb-backup-storage.md`.
+
 ## Instalación
 
 ```bash
