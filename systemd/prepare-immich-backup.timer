@@ -1,0 +1,11 @@
+[Unit]
+Description=QuesadaLab - Daily Immich Backup Preparation Timer
+
+[Timer]
+OnCalendar=*-*-* 01:00:00
+Persistent=true
+AccuracySec=5min
+Unit=prepare-immich-backup.service
+
+[Install]
+WantedBy=timers.target
