@@ -26,15 +26,15 @@ PostgreSQL y Valkey no publican puertos ni se conectan a la red `proxy`. El
 servidor es el unico contenedor accesible por Traefik. Machine Learning comienza
 en CPU porque la VM no dispone de un dispositivo de render Intel real.
 
-## Seguridad inicial
+## Seguridad
 
 - La contrasena de PostgreSQL se lee desde un Docker Secret.
 - La base se inicializa con checksums de datos.
 - No se publica el puerto 2283 directamente en el host.
 - Traefik aplica restriccion LAN y cabeceras globales.
-- `IMMICH_ALLOW_SETUP` solo permanece activo hasta crear el administrador.
-- El certificado dedicado para `immich.lab` debe estar instalado antes del
-  despliegue de produccion.
+- `IMMICH_ALLOW_SETUP=false` impide reabrir el registro inicial.
+- Traefik sirve un certificado dedicado para `immich.lab`, emitido por la PKI
+  interna y validado por los clientes de la LAN.
 
 ## Recursos
 
@@ -76,10 +76,24 @@ Los procedimientos de proteccion de datos se documentan en:
 La cuenta inicial permanece sin cuota logica. El limite efectivo es la capacidad
 del disco; revise regularmente Server Stats y `df -hT /srv/immich-data`.
 
-Pendientes para el cierre total de la fase:
+## Estado validado
 
-1. probar y activar respaldo y replica USB;
-2. agregar monitor HTTPS en Uptime Kuma;
-3. validar carga y consulta desde las aplicaciones moviles;
-4. registrar resultados finales en esta documentacion.
+La fase quedo cerrada el 18 de julio de 2026 con estas comprobaciones:
+
+- los cuatro contenedores (`server`, PostgreSQL, Valkey y Machine Learning)
+  reportan estado saludable;
+- web y `https://immich.lab/api/server/ping` responden HTTP 200;
+- el certificado dedicado serial `1003` valida `immich.lab`;
+- el disco ext4 de 200 GiB esta montado por UUID en `/srv/immich-data`;
+- `IMMICH_ALLOW_SETUP=false` esta aplicado en el contenedor;
+- login, consulta y carga de fotografias funcionan desde web y aplicacion movil;
+- Uptime Kuma valida cada 60 segundos DNS, TLS, HTTP 200 y la palabra `pong`;
+- la preparacion local systemd genera dump, configuracion, checksums y manifest;
+- Proxmox conserva tres snapshots USB incrementales y no deja `.incoming.*`;
+- la incrementalidad se comprobo con el mismo inodo y `links=2` entre snapshots;
+- los timers quedaron activos a la 01:00 (preparacion) y 01:15 (pull USB).
+
+La cuenta inicial permanece sin cuota. Antes de agregar usuarios, revise el uso
+agregado y defina cuotas si la capacidad disponible no permite el crecimiento
+esperado.
 
