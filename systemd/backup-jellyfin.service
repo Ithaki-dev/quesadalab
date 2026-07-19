@@ -1,0 +1,25 @@
+[Unit]
+Description=QuesadaLab - Jellyfin Configuration Backup
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+Environment=JELLYFIN_BACKUP_ROOT=/opt/quesadalab/backups/jellyfin
+Environment=JELLYFIN_BACKUP_RETENTION=3
+ExecStart=/opt/quesadalab/scripts/backup-jellyfin.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=2h
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
+NoNewPrivileges=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
