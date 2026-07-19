@@ -1,0 +1,11 @@
+[Unit]
+Description=QuesadaLab - Daily Jellyfin Configuration Backup
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+Persistent=true
+RandomizedDelaySec=5m
+Unit=backup-jellyfin.service
+
+[Install]
+WantedBy=timers.target

@@ -14,8 +14,8 @@ the Docker host.
 - Intel HD 4600 passed through to `docker01` and exposed as
   `/dev/dri/renderD128`.
 - VA-API with the legacy `i965` driver; Haswell does not support Jellyfin QSV.
-- Media files are deliberately excluded from backup. Only configuration and
-  application state will be protected by the later backup phase.
+- Media files are deliberately excluded from backup. Configuration and
+  application state are protected by the Jellyfin backup workflow.
 
 The HD 4600 accelerates H.264, MPEG-2, VC-1, and JPEG. It does not provide
 modern HEVC, VP9, AV1, or HDR tone-mapping acceleration. Prefer Direct Play
@@ -115,3 +115,8 @@ Back up the Jellyfin configuration and database under
 `/opt/quesadalab/data/jellyfin/config`. Do not back up any content under
 `/srv/jellyfin-media`, including movies, series, music, home videos, cache, or
 transcodes.
+
+The daily local job runs at 02:30 and the USB pull runs at 02:45. See
+[`../../runbooks/jellyfin-backup.md`](../../runbooks/jellyfin-backup.md) and
+[`../../runbooks/jellyfin-restore.md`](../../runbooks/jellyfin-restore.md) for
+installation, verification and recovery procedures.

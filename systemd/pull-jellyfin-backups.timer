@@ -1,0 +1,11 @@
+[Unit]
+Description=QuesadaLab - Daily Jellyfin USB Pull
+
+[Timer]
+OnCalendar=*-*-* 02:45:00
+Persistent=true
+RandomizedDelaySec=5m
+Unit=pull-jellyfin-backups.service
+
+[Install]
+WantedBy=timers.target
