@@ -87,7 +87,8 @@ pull_set() {
     fi
 
     log INFO "Copiando biblioteca con snapshot incremental."
-    rsync --archive --delete --numeric-ids --partial "${link_option[@]}" \
+    rsync --archive --delete --numeric-ids --partial \
+        --chmod=Du=rwx,Dgo=,Fu=rw,Fgo= "${link_option[@]}" \
         -e "$SSH_COMMAND" \
         "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_MEDIA}/" \
         "${STAGING_DIR}/media/"

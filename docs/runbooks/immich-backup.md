@@ -16,6 +16,9 @@ no una referencia de base de datos hacia un archivo ausente.
 No se crea un tar local de la biblioteca. El disco raiz de la VM es menor que el
 disco Immich de 200 GiB, por lo que Proxmox hace pull directo al HDD USB. Los
 snapshots posteriores usan hard links para archivos que no cambiaron.
+La transferencia aplica desde rsync los permisos finales (`0700` para
+directorios y `0600` para archivos); esto permite que `--link-dest` compare los
+atributos correctamente y reutilice los inodos del snapshot anterior.
 
 ## Instalacion en docker01
 
