@@ -100,3 +100,15 @@ systemctl enable --now pull-immich-backups.timer
 La preparacion corre a la 01:00 y el pull a la 01:15. Si la biblioteca tarda mas
 de quince minutos en transferirse por primera vez, ejecute el primer pull manual
 antes de activar el timer; los siguientes snapshots seran incrementales.
+
+## Validacion de produccion
+
+El 18 de julio de 2026 se probaron tanto la ejecucion directa como las unidades
+systemd. Tres snapshots completos fueron aceptados en
+`/mnt/quesadalab-backup/immich`, con checksums correctos y sin directorios
+`.incoming.*` residuales.
+
+La prueba incremental comparo un asset original entre dos snapshots consecutivos:
+ambas rutas mostraron el mismo inodo, modo `0600` y contador `links=2`. Esto
+confirma que los archivos sin cambios comparten bloques en ext4. Los timers de
+preparacion y pull quedaron habilitados y activos.
