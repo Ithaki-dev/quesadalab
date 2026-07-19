@@ -1,0 +1,62 @@
+name: jellyfin
+
+services:
+  jellyfin:
+    image: "docker.io/jellyfin/jellyfin:${JELLYFIN_VERSION}"
+    container_name: jellyfin
+    restart: unless-stopped
+
+    user: "${JELLYFIN_UID}:${JELLYFIN_GID}"
+
+    group_add:
+      - "${JELLYFIN_VIDEO_GID}"
+      - "${JELLYFIN_RENDER_GID}"
+
+    environment:
+      JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_FQDN}"
+      LIBVA_DRIVER_NAME: "${LIBVA_DRIVER_NAME}"
+      TZ: "${TZ}"
+
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+
+    volumes:
+      - "${JELLYFIN_CONFIG_LOCATION}:/config"
+      - "${JELLYFIN_CACHE_LOCATION}:/cache"
+      - "${JELLYFIN_TRANSCODE_LOCATION}:/transcodes"
+      - "${JELLYFIN_MEDIA_LOCATION}/movies:/media/movies:ro"
+      - "${JELLYFIN_MEDIA_LOCATION}/series:/media/series:ro"
+      - "${JELLYFIN_MEDIA_LOCATION}/music:/media/music:ro"
+      - "${JELLYFIN_MEDIA_LOCATION}/home-videos:/media/home-videos:ro"
+      - /etc/localtime:/etc/localtime:ro
+
+    networks:
+      - proxy
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail --silent http://127.0.0.1:8096/health >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+    security_opt:
+      - no-new-privileges:true
+
+    mem_limit: 1536m
+    cpus: 2.0
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.jellyfin.rule=Host(`${JELLYFIN_FQDN}`)"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.tls=true"
+      - "traefik.http.routers.jellyfin.middlewares=lan-only@file,security-headers@file"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+
+networks:
+  proxy:
+    external: true
