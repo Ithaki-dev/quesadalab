@@ -62,15 +62,24 @@ docker network inspect proxy
 No despliegue el stack si el disco dedicado no esta montado. De lo contrario,
 Docker podria crear la biblioteca en el filesystem raiz de la VM.
 
-## Estado
+## Operacion
 
-Preparado en el repositorio. Pendientes antes de produccion:
+El servicio se desplego con certificado dedicado, administrador inicial creado y
+`IMMICH_ALLOW_SETUP=false`. La biblioteca reside en el disco dedicado y no esta
+incluida en `vzdump` porque `scsi2` usa `backup=0`.
 
-1. certificado dedicado para `immich.lab`;
-2. configuracion privada y secreto aleatorio;
-3. despliegue y creacion del administrador;
-4. deshabilitar el endpoint de setup;
-5. backup, restauracion y replica USB;
-6. monitor en Uptime Kuma;
-7. validacion desde las aplicaciones moviles.
+Los procedimientos de proteccion de datos se documentan en:
+
+- `docs/runbooks/immich-backup.md`;
+- `docs/runbooks/immich-restore.md`.
+
+La cuenta inicial permanece sin cuota logica. El limite efectivo es la capacidad
+del disco; revise regularmente Server Stats y `df -hT /srv/immich-data`.
+
+Pendientes para el cierre total de la fase:
+
+1. probar y activar respaldo y replica USB;
+2. agregar monitor HTTPS en Uptime Kuma;
+3. validar carga y consulta desde las aplicaciones moviles;
+4. registrar resultados finales en esta documentacion.
 

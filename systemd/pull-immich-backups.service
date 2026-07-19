@@ -1,0 +1,26 @@
+[Unit]
+Description=QuesadaLab - Pull Immich Backup to USB
+After=network-online.target mnt-quesadalab\x2dbackup.mount
+Wants=network-online.target
+RequiresMountsFor=/mnt/quesadalab-backup
+ConditionPathIsMountPoint=/mnt/quesadalab-backup
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+Environment=IMMICH_USB_RETENTION=3
+ExecStart=/usr/local/sbin/pull-immich-backups.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=24h
+PrivateTmp=yes
+ProtectHome=read-only
+ProtectSystem=full
+NoNewPrivileges=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
