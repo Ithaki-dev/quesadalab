@@ -72,6 +72,7 @@ Los procedimientos de proteccion de datos se documentan en:
 
 - `docs/runbooks/immich-backup.md`;
 - `docs/runbooks/immich-restore.md`.
+- `docs/runbooks/optional-services-lifecycle.md` para operacion bajo demanda.
 
 La cuenta inicial permanece sin cuota logica. El limite efectivo es la capacidad
 del disco; revise regularmente Server Stats y `df -hT /srv/immich-data`.

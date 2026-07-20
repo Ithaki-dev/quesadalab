@@ -120,3 +120,7 @@ The daily local job runs at 02:30 and the USB pull runs at 02:45. See
 [`../../runbooks/jellyfin-backup.md`](../../runbooks/jellyfin-backup.md) and
 [`../../runbooks/jellyfin-restore.md`](../../runbooks/jellyfin-restore.md) for
 installation, verification and recovery procedures.
+
+For planned on-demand shutdown and startup, including timer and Uptime Kuma
+handling, see
+[`../../runbooks/optional-services-lifecycle.md`](../../runbooks/optional-services-lifecycle.md).
