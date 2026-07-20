@@ -8,7 +8,18 @@ Todos los servicios serán desplegados utilizando una combinación de:
 - Máquinas virtuales
 - Docker Compose
 
-Los servicios de infraestructura se ejecutarán en contenedores LXC mientras que las aplicaciones se desplegarán dentro de una máquina virtual Ubuntu Server utilizando Docker.
+Los servicios de infraestructura se ejecutan en contenedores LXC, mientras que
+la mayoría de las aplicaciones se despliegan dentro de la VM `docker01` con
+Docker Compose. Home Assistant es la excepción deliberada: utiliza una VM
+dedicada con Home Assistant OS para conservar Supervisor, add-ons, actualizaciones
+administradas y respaldos nativos.
+
+## Máquinas virtuales principales
+
+| VMID | Nombre | Función |
+|---|---|---|
+| 200 | `docker01` | Plataforma de aplicaciones Docker y Traefik |
+| 300 | `homeassistant` | Home Assistant OS 17.3 |
 
 ## Objetivos de diseño
 

@@ -14,6 +14,11 @@ OpenWrt proporciona los servicios de red fundamentales:
 
 AdGuard Home se ejecuta en un contenedor LXC Debian dentro de Proxmox y actúa como servidor DNS principal para toda la red doméstica.
 
+Las aplicaciones HTTPS internas resuelven a Traefik en `192.168.1.30`.
+Home Assistant mantiene su backend HAOS en `192.168.1.40:8123`, pero
+`homeassistant.lab` resuelve a Traefik para aplicar TLS, restricciones LAN y
+cabeceras de seguridad de forma coherente.
+
 ---
 
 ## Arquitectura
@@ -33,10 +38,15 @@ AdGuard Home se ejecuta en un contenedor LXC Debian dentro de Proxmox y actúa c
                          ▼
                 AdGuard Home
                  192.168.1.20
-                         │
-          DNS-over-HTTPS / DNS-over-TLS
+                         ├──────────────► Traefik / Docker
+                         │                192.168.1.30
+                         │                       │
+                         │                       ▼
+                         │              Home Assistant OS
+                         │                192.168.1.40
                          │
                          ▼
+          DNS-over-HTTPS / DNS-over-TLS
                   Cloudflare DNS
 
 ──────────────────────────────────────────────

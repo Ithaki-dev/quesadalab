@@ -45,11 +45,11 @@ Este proyecto es desarrollado por Robert Quesada junto con su padre como una ini
 | Container Platform | Docker Engine | ✅ |
 | Container Management | Portainer CE | ✅ |
 | Reverse Proxy | Traefik v3 | ✅ |
-| Homepage | ⏳ |
-| Immich | ⏳ |
-| Jellyfin | ⏳ |
+| Homepage | ✅ |
+| Immich | ✅ |
+| Jellyfin | ✅ |
 | Vaultwarden | ✅ |
-| Grafana | ⏳ |
-| Prometheus | ⏳ |
+| Grafana | ✅ |
+| Prometheus | ✅ |
 | Nextcloud | ✅ |
-| Home Assistant | ⏳ |
+| Home Assistant | ✅ |
