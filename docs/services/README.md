@@ -21,13 +21,16 @@ README.md
 | Portainer | ✅ |
 | Traefik | ✅ |
 | Nextcloud | ✅ |
+| Homepage | ✅ |
+| Uptime Kuma | ✅ |
+| Immich | ✅ |
+| Vaultwarden | ✅ |
+| Jellyfin | ✅ |
+| Prometheus | ✅ |
+| Grafana | ✅ |
+| Home Assistant | ✅ |
 
 Future Services
 
-- Homepage
-- Uptime Kuma
-- Immich
-- Vaultwarden
-- Jellyfin
-- Prometheus
-- Grafana
+- Additional home-automation integrations
+- Centralized log aggregation

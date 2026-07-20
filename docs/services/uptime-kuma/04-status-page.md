@@ -38,7 +38,7 @@ http://status.lab
 
 ### 📦 Aplicaciones
 
-Los servicios futuros se incorporarán a este grupo:
+Este grupo incluye:
 
 - Grafana
 - Prometheus
@@ -46,6 +46,7 @@ Los servicios futuros se incorporarán a este grupo:
 - Immich
 - Jellyfin
 - Nextcloud
+- Home Assistant
 
 ---
 
@@ -54,6 +55,11 @@ Los servicios futuros se incorporarán a este grupo:
 La Status Page utiliza los grupos definidos en Uptime Kuma para organizar los servicios.
 
 Cada monitor se actualiza cada 60 segundos.
+
+Home Assistant se supervisa mediante `https://homeassistant.lab/`, acepta
+códigos 200-299 y conserva la verificación TLS habilitada. Así se valida la
+ruta completa DNS, PKI interna, Traefik y backend HAOS, en lugar de comprobar
+únicamente el puerto 8123.
 
 ---
 
