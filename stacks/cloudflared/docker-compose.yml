@@ -25,7 +25,8 @@ services:
       - /tmp:size=16m,noexec,nosuid,nodev
 
     secrets:
-      - tunnel_token
+      - source: tunnel_token
+        target: tunnel-token
 
     networks:
       - proxy
