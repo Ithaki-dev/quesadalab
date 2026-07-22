@@ -25,6 +25,7 @@ readonly -a DEPLOY_ORDER=(
     portainer
     uptime-kuma
     homepage
+    cloudflared
     vaultwarden
 )
 
