@@ -9,7 +9,7 @@ services:
       - .env
 
     environment:
-      HOMEPAGE_ALLOWED_HOSTS: homepage.lab,192.168.1.30:3000
+      HOMEPAGE_ALLOWED_HOSTS: homepage.lab,cloud.ithakidev.com,192.168.1.30:3000
 
     volumes:
       - /opt/quesadalab/data/homepage/config:/app/config
