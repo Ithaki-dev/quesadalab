@@ -12,16 +12,30 @@ published services; no inbound router port forwarding is required.
 - Network: external Docker network `proxy`
 - Tunnel token: `/opt/quesadalab/data/cloudflared/tunnel-token`
 
-The token is runtime-only, owned by `root:root`, mode `0600`, and must never be
-committed to Git, pasted into issues, or exposed through command arguments.
-Compose mounts it through `/run/secrets/tunnel-token`, and cloudflared reads it
-with `--token-file`.
+The token is runtime-only and must never be committed to Git, pasted into
+issues, or exposed through command arguments. The host file must be readable
+only by root and the numeric UID used by the container. Compose mounts it
+read-only through `/run/secrets/tunnel-token`, and cloudflared reads it with
+`--token-file`.
 
-## Initial publication
+Validate the effective ownership and mount instead of assuming them:
 
-The first public application is `cloud.ithakidev.com`, routed to
-`http://homepage:3000`. A Cloudflare Access self-hosted application and its
-allow policy must exist before the public hostname is added to the tunnel.
+```bash
+stat -c '%A %U:%G %n' \
+  /opt/quesadalab/data/cloudflared/tunnel-token
+
+docker inspect cloudflared \
+  --format '{{range .Mounts}}{{println .Destination .RW}}{{end}}'
+```
+
+## Published application
+
+`cloud.ithakidev.com` routes to `http://homepage:3000`. A Cloudflare Access
+self-hosted application and its allow policy protect the hostname before
+traffic reaches the tunnel.
+
+This is a published-application route, not a CIDR private-network route.
+Cloudflare automatically manages the proxied public DNS record.
 
 ## Validation
 
@@ -35,6 +49,19 @@ docker logs --tail 100 cloudflared
 Validate in Cloudflare that the tunnel is `Healthy`, then test the public
 hostname in a private browser session. An unauthenticated request must be sent
 to Cloudflare Access rather than directly to Homepage.
+
+```bash
+curl --silent --show-error --output /dev/null \
+  --write-out 'Unauthenticated HTTPS %{http_code}\n' \
+  https://cloud.ithakidev.com/
+```
+
+The expected unauthenticated result is a redirect to the Cloudflare Access
+login. Do not use `--location` for this check.
+
+If public Cloudflare DNS resolves but AdGuard returns no answer, configure a
+domain-specific encrypted upstream for `ithakidev.com`, flush the resolver
+cache and retest. Do not create a second manual A or CNAME record.
 
 ## Security boundary
 

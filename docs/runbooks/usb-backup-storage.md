@@ -3,8 +3,18 @@
 ## Alcance
 
 El almacenamiento `qlab-usb-backup` reside en un HDD USB conectado al nodo
-Proxmox `quesada`. Guarda respaldos `vzdump` y las replicas verificadas de los
-conjuntos de Nextcloud.
+Proxmox `quesada`. Guarda respaldos `vzdump` y réplicas verificadas de
+Nextcloud, Immich y Jellyfin.
+
+| Ruta o tipo | Contenido |
+|---|---|
+| `dump/vzdump-qemu-*.vma.zst` | Respaldos de máquinas virtuales |
+| `nextcloud/` | Conjuntos de configuración y base de datos |
+| `immich/` | Conjuntos bajo demanda de configuración y base de datos |
+| `jellyfin/` | Configuración de Jellyfin sin contenido multimedia |
+
+Los respaldos de VM 400 incluyen credenciales de Hermes. Todo el dispositivo
+USB debe tratarse como almacenamiento confidencial.
 
 | Elemento | Valor |
 |---|---|
@@ -46,8 +56,15 @@ inmediato. No ejecute otro respaldo ni repare el filesystem mientras este
 montado.
 
 ```bash
-systemctl disable --now pull-nextcloud-backups.timer
-systemctl stop pull-nextcloud-backups.service
+systemctl disable --now \
+  pull-nextcloud-backups.timer \
+  pull-immich-backups.timer \
+  pull-jellyfin-backups.timer
+
+systemctl stop \
+  pull-nextcloud-backups.service \
+  pull-immich-backups.service \
+  pull-jellyfin-backups.service
 pvesm set qlab-usb-backup --disable 1
 sync
 umount /mnt/quesadalab-backup
@@ -74,8 +91,9 @@ produccion se verificaron:
 - ausencia de archivos `.incoming`, `.tmp` y `.dat` residuales;
 - ausencia de nuevos errores USB o ext4 en el kernel.
 
-Solo despues de estas pruebas se habilito nuevamente
-`pull-nextcloud-backups.timer`.
+Solo después de estas pruebas se habilitó nuevamente el timer de Nextcloud.
+Los timers de Immich y Jellyfin permanecen deshabilitados mientras esos
+servicios están bajo demanda.
 
 ## Comprobacion periodica
 
@@ -85,6 +103,8 @@ systemctl is-active pull-nextcloud-backups.timer
 systemctl list-timers pull-nextcloud-backups.timer --all --no-pager
 
 pvesm list qlab-usb-backup --vmid 200
+pvesm list qlab-usb-backup --vmid 300
+pvesm list qlab-usb-backup --vmid 400
 
 journalctl -k --since '24 hours ago' --no-pager |
   grep -Ei 'sdb|usb|uas|reset|disconnect|I/O error|buffer I/O|ext4|bad message' || true

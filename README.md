@@ -21,7 +21,6 @@ Este proyecto es desarrollado por Robert Quesada junto con su padre como una ini
 
 - Proxmox VE
 - Debian
-- Ubuntu Server
 - Docker
 - Docker Compose
 - Portainer
@@ -34,22 +33,30 @@ Este proyecto es desarrollado por Robert Quesada junto con su padre como una ini
 - Prometheus
 - Home Assistant
 - Cloudflare
+- Hermes Agent
+- OpenRouter
 
-# Current Infrastructure
+## Infraestructura actual
 
-| Component | Technology | Status |
-|-----------|------------|--------|
-| Hypervisor | Proxmox VE 9 | ✅ |
-| Router | OpenWrt | ✅ |
-| DNS | AdGuard Home | ✅ |
-| Container Platform | Docker Engine | ✅ |
-| Container Management | Portainer CE | ✅ |
-| Reverse Proxy | Traefik v3 | ✅ |
-| Homepage | ✅ |
-| Immich | ✅ |
-| Jellyfin | ✅ |
-| Vaultwarden | ✅ |
-| Grafana | ✅ |
-| Prometheus | ✅ |
-| Nextcloud | ✅ |
-| Home Assistant | ✅ |
+| Componente | Tecnología | Operación |
+|---|---|---|
+| Hipervisor | Proxmox VE 9 | Siempre activo |
+| Router | OpenWrt | Siempre activo |
+| DNS | AdGuard Home | Siempre activo |
+| Plataforma de contenedores | Docker Engine en VM 200 | Siempre activa |
+| Proxy y acceso remoto | Traefik v3 + Cloudflare Tunnel | Siempre activos |
+| Administración y estado | Portainer, Homepage y Uptime Kuma | Siempre activos |
+| Aplicaciones principales | Nextcloud y Vaultwarden | Siempre activas |
+| Agente | Hermes Agent en VM 400 | Siempre activo |
+| Automatización doméstica | Home Assistant OS en VM 300 | Bajo demanda |
+| Multimedia | Immich y Jellyfin | Bajo demanda |
+| Observabilidad pesada | Prometheus, Grafana y cAdvisor | Bajo demanda |
+| Métricas ligeras | Node Exporter | Siempre activo |
+
+La documentación se organiza en:
+
+- [`docs/architecture/`](docs/architecture/) para la topología y decisiones de
+  alto nivel;
+- [`docs/networking/`](docs/networking/) para direccionamiento y DNS;
+- [`docs/services/`](docs/services/) para cada servicio;
+- [`docs/runbooks/`](docs/runbooks/) para operación, respaldo y recuperación.

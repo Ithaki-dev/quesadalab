@@ -56,10 +56,13 @@ La Status Page utiliza los grupos definidos en Uptime Kuma para organizar los se
 
 Cada monitor se actualiza cada 60 segundos.
 
-Home Assistant se supervisa mediante `https://homeassistant.lab/`, acepta
-códigos 200-299 y conserva la verificación TLS habilitada. Así se valida la
-ruta completa DNS, PKI interna, Traefik y backend HAOS, en lugar de comprobar
-únicamente el puerto 8123.
+Home Assistant se supervisa mediante `https://homeassistant.lab/` cuando VM 300
+está en ejecución. El monitor debe permanecer pausado durante su apagado
+planificado. Cuando se habilita, acepta códigos 200-299 y conserva la
+verificación TLS para validar DNS, PKI interna, Traefik y backend HAOS.
+
+Los monitores de Immich, Jellyfin, Grafana, Prometheus y cAdvisor también deben
+entrar en mantenimiento cuando sus stacks estén detenidos deliberadamente.
 
 ---
 
