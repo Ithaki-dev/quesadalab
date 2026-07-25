@@ -1,12 +1,13 @@
-# Operacion bajo demanda de Immich y Jellyfin
+# Operación de servicios bajo demanda
 
-Immich y Jellyfin pueden permanecer detenidos cuando no se utilizan. Esto libera
-memoria y CPU dentro de `docker01`, especialmente para n8n, sin eliminar datos,
-contenedores ni configuracion.
+Immich, Jellyfin y el grupo de monitorización pueden permanecer detenidos
+cuando no se utilizan. Home Assistant VM 300 también opera bajo demanda. Esto
+reserva memoria y CPU para Hermes sin eliminar datos, contenedores ni
+configuración.
 
 Detener estos stacks no reduce automaticamente la memoria asignada a la VM 200.
-Antes de aumentar la RAM de la futura VM de Hermes, revise tambien la memoria
-disponible en Proxmox y la configuracion de memoria o ballooning de `docker01`.
+Hermes ya reside en VM 400 con 4 vCPU y 4 GiB. Antes de cambiar recursos, revise
+la memoria disponible real en Proxmox y la configuración de todas las VM.
 
 ## Componentes relacionados
 
@@ -26,6 +27,8 @@ La politica habitual es:
 | cAdvisor | Bajo demanda |
 | Immich | Bajo demanda |
 | Jellyfin | Bajo demanda |
+| Home Assistant VM 300 | Bajo demanda |
+| Hermes VM 400 | Siempre activo |
 
 Ponga tambien los monitores correspondientes de Uptime Kuma en mantenimiento.
 No elimine los monitores ni desactive DNS o TLS.
@@ -188,9 +191,10 @@ free -h
 qm config 200 | grep -E '^(memory|balloon):'
 ```
 
-La memoria liberada dentro de `docker01` beneficia directamente a n8n. La RAM
-para Hermes, al residir en una VM separada, debe reservarse con base en la
-memoria disponible real del host y no solo en las metricas de contenedores.
+La memoria liberada dentro de `docker01` aumenta la disponibilidad del host,
+pero la RAM de Hermes está reservada en una VM separada. Tome decisiones con
+`MemAvailable`, swap y el inventario completo de VM, no solo con métricas de
+contenedores.
 
 ## Grupo de monitorizacion bajo demanda
 
@@ -276,3 +280,37 @@ curl --silent --show-error --output /dev/null \
 Use `stop`, nunca `down --volumes`, para conservar la base TSDB de Prometheus,
 los dashboards y la configuracion de Grafana. Estos tres servicios no requieren
 desactivar timers porque actualmente no poseen trabajos systemd programados.
+
+## Home Assistant bajo demanda
+
+Antes de iniciar VM 300:
+
+```bash
+free -h
+qm status 300
+qm config 300 | grep -E '^(memory|onboot):'
+```
+
+Si existe capacidad suficiente:
+
+```bash
+qm start 300
+qm agent 300 ping
+curl --silent --show-error --output /dev/null \
+  --write-out 'Home Assistant HTTP %{http_code}\n' \
+  https://homeassistant.lab/
+```
+
+Quite el mantenimiento del monitor solo después de obtener HTTP 200. Para
+devolver recursos a Hermes, apague Home Assistant desde el sistema invitado,
+espere `status: stopped` y mantenga `onboot=0`:
+
+```bash
+qm shutdown 300 --timeout 180
+qm status 300
+qm set 300 --onboot 0
+```
+
+Pause nuevamente el monitor de Uptime Kuma. El job `homeassistant-daily` debe
+permanecer deshabilitado durante apagados prolongados; haga un respaldo manual
+antes de cambios importantes.

@@ -57,5 +57,7 @@ curl --silent --show-error --output /dev/null \
   http://192.168.1.40:8123/
 ```
 
-Confirm the certificate hostname, Traefik routing, integrations, automations,
-Kuma status and both backup schedules before declaring recovery complete.
+Confirm the certificate hostname, Traefik routing, integrations and
+automations before declaring recovery complete. Restore the intended on-demand
+state (`onboot=0`, backup job disabled and Kuma monitor paused) unless the
+operating policy has been deliberately changed.

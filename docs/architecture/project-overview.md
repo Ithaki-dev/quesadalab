@@ -2,29 +2,34 @@
 
 El laboratorio se basa en una Dell OptiPlex 9020 MT ejecutando Proxmox VE.
 
-Todos los servicios serán desplegados utilizando una combinación de:
+Los servicios se despliegan utilizando una combinación de:
 
-- Contenedores LXC
 - Máquinas virtuales
 - Docker Compose
 
-Los servicios de infraestructura se ejecutan en contenedores LXC, mientras que
-la mayoría de las aplicaciones se despliegan dentro de la VM `docker01` con
-Docker Compose. Home Assistant es la excepción deliberada: utiliza una VM
-dedicada con Home Assistant OS para conservar Supervisor, add-ons, actualizaciones
-administradas y respaldos nativos.
+La mayoría de las aplicaciones se ejecutan dentro de la VM `docker01` con
+Docker Compose. Home Assistant utiliza una VM dedicada con Home Assistant OS
+para conservar Supervisor y add-ons. Hermes utiliza otra VM Debian dedicada
+para aislar credenciales, herramientas y canales de mensajería del resto de
+las aplicaciones.
 
 ## Máquinas virtuales principales
 
-| VMID | Nombre | Función |
-|---|---|---|
-| 200 | `docker01` | Plataforma de aplicaciones Docker y Traefik |
-| 300 | `homeassistant` | Home Assistant OS 17.3 |
+| VMID | Nombre | Recursos | Función | Operación |
+|---|---|---|---|---|
+| 200 | `docker01` | 4 vCPU, 8 GiB RAM, 80 GiB | Docker, Traefik y servicios | Siempre activa |
+| 300 | `homeassistant` | 2 vCPU, 2 GiB RAM, 32 GiB | Home Assistant OS 17.3 | Bajo demanda, `onboot=0` |
+| 400 | `agent01` | 4 vCPU, 4 GiB RAM, 64 GiB | Hermes Agent con proveedor externo | Siempre activa |
+
+`agent01` dispone además de 2 GiB de swap de emergencia. No ejecuta un modelo
+local: el modelo predeterminado se consume mediante OpenRouter.
 
 ## Objetivos de diseño
 
 - Bajo consumo de recursos.
-- Alta disponibilidad dentro del entorno doméstico.
+- Continuidad razonable dentro del entorno doméstico.
 - Facilidad de mantenimiento.
 - Facilidad de respaldo.
 - Arquitectura reproducible.
+- Separación entre servicios esenciales y cargas bajo demanda.
+- Acceso remoto sin puertos entrantes mediante Cloudflare Tunnel y Access.

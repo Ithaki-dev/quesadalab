@@ -6,7 +6,7 @@ recovery.
 
 ## Native HAOS backup
 
-The production schedule is:
+When VM 300 is running, the recommended native policy is:
 
 - daily at 00:15;
 - retain seven backups;
@@ -21,7 +21,8 @@ VM 300 or on the same USB backup disk.
 
 ## Proxmox VM backup
 
-The cluster backup job `homeassistant-daily` protects VM 300 with:
+The cluster backup job `homeassistant-daily` is retained but disabled while VM
+300 remains intentionally stopped:
 
 | Setting | Value |
 |---|---|
@@ -31,6 +32,7 @@ The cluster backup job `homeassistant-daily` protects VM 300 with:
 | Compression | Zstandard |
 | I/O priority | 7 |
 | Retention | last 3, weekly 4, monthly 3 |
+| Normal job state | disabled |
 
 Inspect the job and destination:
 
@@ -67,5 +69,6 @@ curl --silent --show-error --output /dev/null \
   https://homeassistant.lab/
 ```
 
-Review scheduled job history after its first automatic execution and monitor
-the USB filesystem for capacity and kernel I/O errors.
+If Home Assistant returns to always-on operation, explicitly enable the job
+after validating the VM and USB storage. Monitor the USB filesystem for
+capacity and kernel I/O errors.
