@@ -1,0 +1,43 @@
+title: QuesadaLab
+description: Panel central de infraestructura y servicios
+
+theme: dark
+color: slate
+language: es
+target: _blank
+
+headerStyle: clean
+statusStyle: basic
+showStats: false
+disableIndexing: true
+
+layout:
+  Servicios esenciales:
+    style: row
+    columns: 5
+
+  Hermes Agent:
+    style: row
+    columns: 4
+
+  Infraestructura:
+    style: row
+    columns: 5
+
+  Bajo demanda:
+    style: row
+    columns: 3
+
+  Diagnóstico:
+    style: row
+    columns: 3
+
+  Acceso y proyecto:
+    style: row
+    columns: 4
+    iconsOnly: true
+
+  Documentación:
+    style: row
+    columns: 4
+    iconsOnly: true
