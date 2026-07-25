@@ -12,7 +12,7 @@ services:
       HOMEPAGE_ALLOWED_HOSTS: homepage.lab,cloud.ithakidev.com,192.168.1.30:3000
 
     volumes:
-      - /opt/quesadalab/data/homepage/config:/app/config
+      - /opt/quesadalab/config/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
     networks:

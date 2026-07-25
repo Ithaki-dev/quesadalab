@@ -1,0 +1,165 @@
+- Servicios esenciales:
+    - Homepage:
+        icon: homepage.svg
+        href: https://cloud.ithakidev.com
+        description: Panel central protegido por Cloudflare Access
+        server: my-docker
+        container: homepage
+
+    - Cloudflare Tunnel:
+        icon: cloudflare.svg
+        href: https://dash.cloudflare.com
+        description: Acceso remoto seguro a QuesadaLab
+        server: my-docker
+        container: cloudflared
+
+    - Uptime Kuma:
+        icon: uptime-kuma.svg
+        href: http://kuma.lab
+        description: Disponibilidad y alertas
+        server: my-docker
+        container: uptime-kuma
+
+    - Nextcloud:
+        icon: nextcloud.svg
+        href: https://nextcloud.lab
+        description: Archivos y colaboración privada
+        server: my-docker
+        container: nextcloud
+
+    - Vaultwarden:
+        icon: vaultwarden.svg
+        href: https://vault.lab
+        description: Gestor privado de contraseñas
+        server: my-docker
+        container: vaultwarden
+
+- Hermes Agent:
+    - Agent01:
+        icon: mdi-robot-outline
+        href: ssh://hermes@192.168.1.60
+        description: 4 vCPU · 4 GiB RAM · 64 GB · modelo externo
+
+    - Discord:
+        icon: discord.svg
+        href: https://discord.com/channels/1516903550696034417/1528758416565342338
+        description: Canal privado de Hermes
+
+    - Telegram:
+        icon: telegram.svg
+        href: https://web.telegram.org
+        description: Mensajería autorizada con Hermes
+
+    - Correo Hermes:
+        icon: gmail.svg
+        href: https://mail.google.com
+        description: Buzón dedicado del agente
+
+- Infraestructura:
+    - Proxmox:
+        icon: proxmox.svg
+        href: https://192.168.1.10:8006
+        description: Hipervisor principal · nodo quesada
+        widget:
+          type: proxmox
+          url: "{{HOMEPAGE_VAR_PROXMOX_URL}}"
+          username: "{{HOMEPAGE_VAR_PROXMOX_USER}}"
+          password: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
+          node: quesada
+          fields:
+            - vms
+            - lxc
+            - resources.cpu
+            - resources.mem
+
+    - OpenWrt:
+        icon: openwrt.svg
+        href: http://192.168.1.1
+        description: Router y firewall
+
+    - AdGuard Home:
+        icon: adguard-home.svg
+        href: http://192.168.1.20
+        description: DNS local y filtrado
+        widget:
+          type: adguard
+          url: http://192.168.1.20
+          username: "{{HOMEPAGE_VAR_ADGUARD_USER}}"
+          password: "{{HOMEPAGE_VAR_ADGUARD_PASS}}"
+          fields:
+            - queries
+            - blocked
+            - filtered
+            - latency
+
+    - Portainer:
+        icon: portainer.svg
+        href: http://portainer.lab
+        description: Administración de Docker
+        server: my-docker
+        container: portainer
+
+    - Traefik:
+        icon: traefik-proxy.svg
+        href: http://traefik.lab/dashboard/
+        description: Proxy inverso interno
+        server: my-docker
+        container: traefik
+        widget:
+          type: traefik
+          url: http://traefik:8080
+
+- Bajo demanda:
+    - Home Assistant:
+        icon: home-assistant.svg
+        href: https://homeassistant.lab
+        description: VM 300 · automatización del hogar
+        siteMonitor: http://192.168.1.40:8123
+
+    - Immich:
+        icon: immich.svg
+        href: https://immich.lab
+        description: Fotografías y videos personales
+        server: my-docker
+        container: immich-server
+
+    - Jellyfin:
+        icon: jellyfin.svg
+        href: https://jellyfin.lab
+        description: Biblioteca multimedia
+        server: my-docker
+        container: jellyfin
+
+    - Grafana:
+        icon: grafana.svg
+        href: http://grafana.lab
+        description: Visualización de métricas
+        server: my-docker
+        container: grafana
+
+    - Prometheus:
+        icon: prometheus.svg
+        href: http://prometheus.lab
+        description: Almacenamiento de métricas
+        server: my-docker
+        container: prometheus
+
+    - cAdvisor:
+        icon: mdi-chart-box-outline
+        description: Métricas detalladas de contenedores
+        server: my-docker
+        container: cadvisor
+
+- Diagnóstico:
+    - Node Exporter:
+        icon: prometheus.svg
+        description: Métricas básicas de docker01
+        server: my-docker
+        container: node-exporter
+
+    - Whoami:
+        icon: mdi-information-outline
+        href: http://whoami.lab
+        description: Diagnóstico de enrutamiento HTTP
+        server: my-docker
+        container: whoami

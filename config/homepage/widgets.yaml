@@ -1,0 +1,15 @@
+- greeting:
+    text_size: xl
+    text: QuesadaLab
+
+- datetime:
+    text_size: md
+    format:
+      dateStyle: long
+      timeStyle: short
+      hourCycle: h23
+
+- resources:
+    cpu: true
+    memory: true
+    disk: /

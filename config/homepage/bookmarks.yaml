@@ -1,0 +1,29 @@
+- Acceso y proyecto:
+    - Repositorio:
+        - icon: github.svg
+          href: https://github.com/Ithaki-dev/quesadalab
+
+    - Cloudflare Zero Trust:
+        - icon: cloudflare.svg
+          href: https://one.dash.cloudflare.com
+
+    - Discord Hermes:
+        - icon: discord.svg
+          href: https://discord.com/channels/1516903550696034417/1528758416565342338
+
+- Documentación:
+    - Homepage:
+        - icon: homepage.svg
+          href: https://gethomepage.dev
+
+    - Proxmox VE:
+        - icon: proxmox.svg
+          href: https://pve.proxmox.com/pve-docs/
+
+    - Docker:
+        - icon: docker.svg
+          href: https://docs.docker.com
+
+    - Traefik:
+        - icon: traefik-proxy.svg
+          href: https://doc.traefik.io/traefik/
