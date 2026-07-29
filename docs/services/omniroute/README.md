@@ -12,7 +12,8 @@ always-on QuesadaLab control plane.
 | Internal URL | `https://omniroute.lab` |
 | Runtime | Docker Compose |
 | Source release | `v3.8.48` |
-| Reviewed commit | `4f00f84b5a12f90fca2f1d72a60404cf6f5bf059` |
+| Annotated tag object | `4f00f84b5a12f90fca2f1d72a60404cf6f5bf059` |
+| Reviewed commit | `7ee5bbc64dbb03e967521227f2afffeb7c9dad1e` |
 | Image | Locally built `runner-base` |
 | State | `/opt/quesadalab/data/omniroute` |
 | Redis state | `/opt/quesadalab/data/omniroute-redis` |
@@ -51,9 +52,10 @@ cd /opt/quesadalab-repo
 sudo ./scripts/prepare-omniroute-image.sh
 ```
 
-The script clones the immutable upstream tag, verifies its exact commit and
-builds only the `runner-base` target. An existing image is reused only when its
-revision label matches the reviewed commit.
+The script clones the immutable upstream tag, verifies both the annotated tag
+object and its target commit, and builds only the `runner-base` target. An
+existing image is reused only when its revision label matches the reviewed
+commit.
 
 ## Prepare runtime state and secrets
 
