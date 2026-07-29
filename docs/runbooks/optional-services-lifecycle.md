@@ -28,10 +28,30 @@ La politica habitual es:
 | Immich | Bajo demanda |
 | Jellyfin | Bajo demanda |
 | Home Assistant VM 300 | Bajo demanda |
+| OmniRoute | Bajo demanda, experimental |
 | Hermes VM 400 | Siempre activo |
 
 Ponga tambien los monitores correspondientes de Uptime Kuma en mantenimiento.
 No elimine los monitores ni desactive DNS o TLS.
+
+OmniRoute se opera de forma independiente al grupo de monitorizacion y a los
+servicios multimedia:
+
+```bash
+docker compose \
+  --project-directory /opt/quesadalab/stacks/omniroute \
+  --env-file /opt/quesadalab/stacks/omniroute/.env \
+  --file /opt/quesadalab/stacks/omniroute/docker-compose.yml \
+  start
+
+docker compose \
+  --project-directory /opt/quesadalab/stacks/omniroute \
+  --env-file /opt/quesadalab/stacks/omniroute/.env \
+  --file /opt/quesadalab/stacks/omniroute/docker-compose.yml \
+  stop --timeout 60
+```
+
+Mantenga Hermes conectado directamente a OpenRouter durante la evaluacion.
 
 ## Apagado planificado
 

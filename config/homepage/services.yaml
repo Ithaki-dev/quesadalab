@@ -110,6 +110,13 @@
           url: http://traefik:8080
 
 - Bajo demanda:
+    - OmniRoute:
+        icon: mdi-routes
+        href: https://omniroute.lab
+        description: Gateway de IA experimental
+        server: my-docker
+        container: omniroute
+
     - Home Assistant:
         icon: home-assistant.svg
         href: https://homeassistant.lab
