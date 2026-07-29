@@ -70,6 +70,6 @@ chown -R 1000:1000 /opt/quesadalab/data/omniroute
 chown -R 999:999 /opt/quesadalab/data/omniroute-redis
 ```
 
-Rebuild the pinned image with `scripts/prepare-omniroute-image.sh`, deploy the
+Prepare the pinned image with `scripts/prepare-omniroute-image.sh`, deploy the
 stack, validate HTTPS and test a dedicated low-risk provider credential before
 reconnecting any client.
