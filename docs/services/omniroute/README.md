@@ -14,7 +14,7 @@ always-on QuesadaLab control plane.
 | Source release | `v3.8.48` |
 | Annotated tag object | `4f00f84b5a12f90fca2f1d72a60404cf6f5bf059` |
 | Reviewed commit | `7ee5bbc64dbb03e967521227f2afffeb7c9dad1e` |
-| Image | Locally built `runner-base` |
+| Image | Official AMD64 image pinned by repository digest |
 | State | `/opt/quesadalab/data/omniroute` |
 | Redis state | `/opt/quesadalab/data/omniroute-redis` |
 | Exposure | LAN only through Traefik |
@@ -30,8 +30,8 @@ service.
 - Redis is connected only to the internal `omniroute-backend` network.
 - The web/API endpoint is protected by Traefik's `lan-only` and
   `security-headers` middleware.
-- The application runs as the non-root `node` user with all Linux capabilities
-  dropped.
+- The reviewed image runs as the non-root `node` user with all Linux
+  capabilities dropped by Compose.
 - JWT, API-key, storage-encryption and bootstrap credentials live only in the
   deployed `.env`, never in Git.
 - Backups contain provider credentials and must be treated as confidential.
@@ -52,10 +52,11 @@ cd /opt/quesadalab-repo
 sudo ./scripts/prepare-omniroute-image.sh
 ```
 
-The script clones the immutable upstream tag, verifies both the annotated tag
-object and its target commit, and builds only the `runner-base` target. An
-existing image is reused only when its revision label matches the reviewed
-commit.
+The script downloads
+`docker.io/diegosouzapw/omniroute@sha256:badb560971fdc23c2fb84b3e8695116239ff215b4cca4b07076201a8efae7f0d`.
+It verifies the immutable repository digest, Linux/AMD64 platform, non-root
+`node` user and upstream source label. It does not compile source or start a
+container.
 
 ## Prepare runtime state and secrets
 

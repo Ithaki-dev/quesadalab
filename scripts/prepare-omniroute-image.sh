@@ -3,31 +3,11 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
-readonly UPSTREAM_REPOSITORY="https://github.com/diegosouzapw/OmniRoute.git"
-readonly UPSTREAM_TAG="v3.8.48"
-readonly UPSTREAM_TAG_OBJECT="4f00f84b5a12f90fca2f1d72a60404cf6f5bf059"
-readonly UPSTREAM_COMMIT="7ee5bbc64dbb03e967521227f2afffeb7c9dad1e"
-readonly IMAGE_NAME="quesadalab/omniroute:${UPSTREAM_TAG}"
-readonly BUILD_ROOT="/opt/quesadalab/tmp"
-
-build_dir=""
-
-cleanup() {
-    if [[ -n "$build_dir" && -d "$build_dir" ]]; then
-        case "$build_dir" in
-            "${BUILD_ROOT}"/omniroute-build.*)
-                rm -rf -- "$build_dir"
-                ;;
-            *)
-                printf '[WARNING] Refusing cleanup outside %s: %s\n' \
-                    "$BUILD_ROOT" "$build_dir" >&2
-                ;;
-        esac
-    fi
-}
-
-trap cleanup EXIT
-trap 'exit 130' INT TERM
+readonly IMAGE_REPOSITORY="docker.io/diegosouzapw/omniroute"
+readonly IMAGE_VERSION="3.8.48"
+readonly IMAGE_DIGEST="sha256:badb560971fdc23c2fb84b3e8695116239ff215b4cca4b07076201a8efae7f0d"
+readonly IMAGE_REFERENCE="${IMAGE_REPOSITORY}@${IMAGE_DIGEST}"
+readonly EXPECTED_SOURCE="https://github.com/diegosouzapw/OmniRoute"
 
 if [[ "$(hostname)" != "docker01" ]]; then
     echo "[ERROR] Run this script inside docker01"
@@ -39,7 +19,7 @@ if [[ "$(id -u)" -ne 0 ]]; then
     exit 1
 fi
 
-for command_name in docker git install mktemp; do
+for command_name in docker grep; do
     if ! command -v "$command_name" >/dev/null 2>&1; then
         echo "[ERROR] Missing required command: $command_name"
         exit 1
@@ -47,81 +27,61 @@ for command_name in docker git install mktemp; do
 done
 
 echo "=== OMNIROUTE IMAGE PREPARATION ==="
-echo "upstream-tag=$UPSTREAM_TAG"
-echo "expected-tag-object=$UPSTREAM_TAG_OBJECT"
-echo "expected-commit=$UPSTREAM_COMMIT"
-echo "image=$IMAGE_NAME"
+echo "version=$IMAGE_VERSION"
+echo "image=$IMAGE_REFERENCE"
 
-if docker image inspect "$IMAGE_NAME" >/dev/null 2>&1; then
-    existing_commit="$(
-        docker image inspect "$IMAGE_NAME" \
-            --format '{{index .Config.Labels "org.opencontainers.image.revision"}}'
-    )"
+echo "=== PULL IMMUTABLE IMAGE ==="
 
-    if [[ "$existing_commit" == "$UPSTREAM_COMMIT" ]]; then
-        echo "[OK] Verified image already exists"
-        exit 0
-    fi
-
-    echo "[ERROR] Image tag exists with an unexpected source revision"
-    echo "actual-commit=${existing_commit:-missing}"
-    exit 1
-fi
-
-install -d -o root -g root -m 0750 "$BUILD_ROOT"
-build_dir="$(mktemp -d "${BUILD_ROOT}/omniroute-build.XXXXXX")"
-
-echo "=== FETCH PINNED SOURCE ==="
-
-git clone \
-    --branch "$UPSTREAM_TAG" \
-    --depth 1 \
-    "$UPSTREAM_REPOSITORY" \
-    "$build_dir/source"
-
-actual_tag_object="$(
-    git -C "$build_dir/source" rev-parse "${UPSTREAM_TAG}^{tag}"
-)"
-actual_commit="$(
-    git -C "$build_dir/source" rev-parse "${UPSTREAM_TAG}^{commit}"
-)"
-
-echo "actual-tag-object=$actual_tag_object"
-echo "actual-commit=$actual_commit"
-
-if [[ "$actual_tag_object" != "$UPSTREAM_TAG_OBJECT" ]]; then
-    echo "[ERROR] Upstream annotated tag object does not match the reviewed tag"
-    exit 1
-fi
-
-if [[ "$actual_commit" != "$UPSTREAM_COMMIT" ]]; then
-    echo "[ERROR] Upstream tag does not match the reviewed commit"
-    exit 1
-fi
-
-echo "=== BUILD RUNNER-BASE IMAGE ==="
-
-docker build \
-    --target runner-base \
-    --label "org.opencontainers.image.source=$UPSTREAM_REPOSITORY" \
-    --label "org.opencontainers.image.version=$UPSTREAM_TAG" \
-    --label "org.opencontainers.image.revision=$UPSTREAM_COMMIT" \
-    --tag "$IMAGE_NAME" \
-    "$build_dir/source"
+docker pull "$IMAGE_REFERENCE"
 
 echo "=== IMAGE VALIDATION ==="
 
-docker image inspect "$IMAGE_NAME" \
-    --format 'id={{.Id}} user={{.Config.User}} size={{.Size}} revision={{index .Config.Labels "org.opencontainers.image.revision"}}'
-
 image_user="$(
-    docker image inspect "$IMAGE_NAME" \
+    docker image inspect "$IMAGE_REFERENCE" \
         --format '{{.Config.User}}'
 )"
+image_architecture="$(
+    docker image inspect "$IMAGE_REFERENCE" \
+        --format '{{.Architecture}}'
+)"
+image_os="$(
+    docker image inspect "$IMAGE_REFERENCE" \
+        --format '{{.Os}}'
+)"
+image_source="$(
+    docker image inspect "$IMAGE_REFERENCE" \
+        --format '{{index .Config.Labels "org.opencontainers.image.source"}}'
+)"
+repo_digests="$(
+    docker image inspect "$IMAGE_REFERENCE" \
+        --format '{{range .RepoDigests}}{{println .}}{{end}}'
+)"
 
-if [[ "$image_user" != "node" && "$image_user" != "1000" ]]; then
+docker image inspect "$IMAGE_REFERENCE" \
+    --format 'id={{.Id}} size={{.Size}} user={{.Config.User}} architecture={{.Architecture}} os={{.Os}}'
+
+printf '%s\n' "$repo_digests"
+
+if ! grep -Fxq \
+    "diegosouzapw/omniroute@${IMAGE_DIGEST}" \
+    <<<"$repo_digests"; then
+    echo "[ERROR] Pulled image does not expose the reviewed repository digest"
+    exit 1
+fi
+
+if [[ "$image_user" != "node" ]]; then
     echo "[ERROR] OmniRoute image does not use the expected non-root user"
     exit 1
 fi
 
-echo "[OK] Pinned OmniRoute runner-base image is ready"
+if [[ "$image_architecture" != "amd64" || "$image_os" != "linux" ]]; then
+    echo "[ERROR] OmniRoute image has an unexpected platform"
+    exit 1
+fi
+
+if [[ "$image_source" != "$EXPECTED_SOURCE" ]]; then
+    echo "[ERROR] OmniRoute image has an unexpected source label"
+    exit 1
+fi
+
+echo "[OK] Pinned official OmniRoute image is ready"
