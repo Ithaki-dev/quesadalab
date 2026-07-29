@@ -1,0 +1,83 @@
+name: omniroute
+
+services:
+  omniroute:
+    image: ${OMNIROUTE_IMAGE}
+    container_name: omniroute
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "20128"
+      HOSTNAME: 0.0.0.0
+      DATA_DIR: /app/data
+      REDIS_URL: redis://omniroute-redis:6379
+      AUTH_COOKIE_SECURE: "true"
+      OMNIROUTE_MEMORY_MB: ${OMNIROUTE_MEMORY_MB:-768}
+      OMNIROUTE_ENABLE_LIVE_WS: "0"
+    volumes:
+      - /opt/quesadalab/data/omniroute:/app/data
+    depends_on:
+      omniroute-redis:
+        condition: service_healthy
+    networks:
+      - proxy
+      - omniroute-backend
+    mem_limit: 1g
+    cpus: 1.5
+    pids_limit: 256
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.mjs"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.omniroute.rule=Host(`omniroute.lab`)"
+      - "traefik.http.routers.omniroute.entrypoints=websecure"
+      - "traefik.http.routers.omniroute.tls=true"
+      - "traefik.http.routers.omniroute.middlewares=lan-only@file,security-headers@file"
+      - "traefik.http.services.omniroute.loadbalancer.server.port=20128"
+
+  omniroute-redis:
+    image: redis:8.6.2-alpine
+    container_name: omniroute-redis
+    restart: "no"
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --save
+      - "60"
+      - "1000"
+      - --maxmemory
+      - 96mb
+      - --maxmemory-policy
+      - noeviction
+    volumes:
+      - /opt/quesadalab/data/omniroute-redis:/data
+    networks:
+      - omniroute-backend
+    mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 128
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+networks:
+  proxy:
+    external: true
+  omniroute-backend:
+    internal: true

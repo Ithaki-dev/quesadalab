@@ -35,6 +35,7 @@ README.md
 | Prometheus | On demand | [`prometheus`](prometheus/README.md) |
 | Grafana | On demand | [`grafana`](grafana/README.md) |
 | cAdvisor | On demand | [`cadvisor`](cadvisor/README.md) |
+| OmniRoute | On demand, experimental | [`omniroute`](omniroute/README.md) |
 
 Planned services are not listed as deployed until their implementation and
 validation are complete.
