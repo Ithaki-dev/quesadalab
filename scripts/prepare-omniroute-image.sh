@@ -5,7 +5,8 @@ IFS=$'\n\t'
 
 readonly UPSTREAM_REPOSITORY="https://github.com/diegosouzapw/OmniRoute.git"
 readonly UPSTREAM_TAG="v3.8.48"
-readonly UPSTREAM_COMMIT="4f00f84b5a12f90fca2f1d72a60404cf6f5bf059"
+readonly UPSTREAM_TAG_OBJECT="4f00f84b5a12f90fca2f1d72a60404cf6f5bf059"
+readonly UPSTREAM_COMMIT="7ee5bbc64dbb03e967521227f2afffeb7c9dad1e"
 readonly IMAGE_NAME="quesadalab/omniroute:${UPSTREAM_TAG}"
 readonly BUILD_ROOT="/opt/quesadalab/tmp"
 
@@ -47,6 +48,7 @@ done
 
 echo "=== OMNIROUTE IMAGE PREPARATION ==="
 echo "upstream-tag=$UPSTREAM_TAG"
+echo "expected-tag-object=$UPSTREAM_TAG_OBJECT"
 echo "expected-commit=$UPSTREAM_COMMIT"
 echo "image=$IMAGE_NAME"
 
@@ -77,8 +79,20 @@ git clone \
     "$UPSTREAM_REPOSITORY" \
     "$build_dir/source"
 
-actual_commit="$(git -C "$build_dir/source" rev-parse HEAD)"
+actual_tag_object="$(
+    git -C "$build_dir/source" rev-parse "${UPSTREAM_TAG}^{tag}"
+)"
+actual_commit="$(
+    git -C "$build_dir/source" rev-parse "${UPSTREAM_TAG}^{commit}"
+)"
+
+echo "actual-tag-object=$actual_tag_object"
 echo "actual-commit=$actual_commit"
+
+if [[ "$actual_tag_object" != "$UPSTREAM_TAG_OBJECT" ]]; then
+    echo "[ERROR] Upstream annotated tag object does not match the reviewed tag"
+    exit 1
+fi
 
 if [[ "$actual_commit" != "$UPSTREAM_COMMIT" ]]; then
     echo "[ERROR] Upstream tag does not match the reviewed commit"
