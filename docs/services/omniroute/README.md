@@ -11,9 +11,9 @@ always-on QuesadaLab control plane.
 | Host | `docker01` |
 | Internal URL | `https://omniroute.lab` |
 | Runtime | Docker Compose |
-| Source release | `v3.8.48` |
-| Annotated tag object | `4f00f84b5a12f90fca2f1d72a60404cf6f5bf059` |
-| Reviewed commit | `7ee5bbc64dbb03e967521227f2afffeb7c9dad1e` |
+| Source release | `v3.8.49` |
+| Annotated tag object | `bbb3b6eab72911d4fd7e6be9315edc983e5c1a6b` |
+| Reviewed commit | `c9d4a45f1883d7daf150bbff631f3e83b41aa5b4` |
 | Image | Official AMD64 image pinned by repository digest |
 | State | `/opt/quesadalab/data/omniroute` |
 | Redis state | `/opt/quesadalab/data/omniroute-redis` |
@@ -54,7 +54,7 @@ sudo ./scripts/prepare-omniroute-image.sh
 ```
 
 The script downloads
-`docker.io/diegosouzapw/omniroute@sha256:badb560971fdc23c2fb84b3e8695116239ff215b4cca4b07076201a8efae7f0d`.
+`docker.io/diegosouzapw/omniroute@sha256:92c768c56e2de32c51a0621ef182835018b00b288c9bb235c5c5e4514658c1a1`.
 It verifies the immutable repository digest, Linux/AMD64 platform, non-root
 `node` user and upstream source label. It does not compile source or start a
 container.
