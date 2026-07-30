@@ -39,10 +39,22 @@ service.
 
 ## Resource profile
 
-The initial limit is 1 GiB and 1.5 CPU for OmniRoute, plus 128 MiB and 0.5 CPU
-for Redis. `OMNIROUTE_MEMORY_MB=768` limits the Node.js heap. Increase the
-application limit to 1536 MiB only after observing an out-of-memory event or
-sustained memory pressure.
+The production limit is 1536 MiB and 1.5 CPU for OmniRoute, plus 128 MiB and
+0.5 CPU for Redis. `OMNIROUTE_MEMORY_MB=768` limits the Node.js heap and leaves
+approximately 768 MiB for native allocations and runtime overhead. The
+application limit was increased after Docker recorded an OOM termination while
+testing release 3.8.49 with the former 1 GiB limit.
+
+## Release 3.8.49 provider limitation
+
+The zero-credential OpenCode routes advertised by upstream are not considered
+production-ready in this deployment. Direct `oc/...` requests can fail while
+attempting to connect to `0.0.0.0:443`. An `auto/best-free` success does not by
+itself validate zero-credential operation because the combo can fall back to a
+configured provider such as OpenRouter.
+
+Keep Hermes on its validated direct provider path until both a direct
+zero-credential route and the intended `auto/...` route pass from `agent01`.
 
 ## Prepare the image
 
