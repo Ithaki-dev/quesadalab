@@ -34,6 +34,7 @@ service.
   capabilities dropped by Compose.
 - JWT, API-key, storage-encryption and bootstrap credentials live only in the
   deployed `.env`, never in Git.
+- All OpenAI-compatible `/v1` requests require a dedicated OmniRoute API key.
 - Backups contain provider credentials and must be treated as confidential.
 
 ## Resource profile
@@ -99,7 +100,9 @@ curl --silent --show-error --output /dev/null \
 ```
 
 Complete the bootstrap login, change the initial password if the UI offers that
-control, and add only a dedicated low-limit provider credential.
+control, and add only a dedicated low-limit provider credential. Create
+separate, least-privilege OmniRoute client keys for each consumer; never expose
+the provider credential directly to Hermes or other clients.
 
 ## Operate on demand
 

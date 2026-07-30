@@ -14,6 +14,7 @@ services:
       DATA_DIR: /app/data
       REDIS_URL: redis://omniroute-redis:6379
       AUTH_COOKIE_SECURE: "true"
+      REQUIRE_API_KEY: "true"
       OMNIROUTE_MEMORY_MB: ${OMNIROUTE_MEMORY_MB:-768}
       OMNIROUTE_ENABLE_LIVE_WS: "0"
     volumes:
