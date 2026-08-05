@@ -67,19 +67,31 @@ Idiomas:
 
 ## Fuentes prioritarias
 
-Buscar primero en:
+Buscar primero mediante fuentes públicas estructuradas que no requieran inicio de sesión:
 
-- LinkedIn Jobs
-- Indeed
-- Wellfound
 - Greenhouse
 - Lever
 - Ashby
-- Workable
-- BambooHR
-- SmartRecruiters
 
-Luego revisar directamente los career pages de empresas tecnológicas.
+Usar, cuando corresponda, sus endpoints públicos oficiales:
+
+- Greenhouse: `https://boards-api.greenhouse.io/v1/boards/{board_token}/jobs?content=true`
+- Lever: `https://api.lever.co/v0/postings/{site}?mode=json`
+- Ashby: `https://api.ashbyhq.com/posting-api/job-board/{job_board_name}`
+
+Utilizar buscadores únicamente para descubrir páginas de empresas y los identificadores públicos de sus bolsas. La publicación original o la respuesta del API oficial debe ser la fuente de verificación.
+
+Después revisar directamente las páginas públicas de empleo de empresas tecnológicas.
+
+No usar como fuente primaria sitios que estén mostrando CAPTCHA, autenticación o controles anti-bot, incluyendo:
+
+- LinkedIn Jobs
+- Indeed
+- Glassdoor
+- Wellfound
+- We Work Remotely
+
+No reintentar repetidamente una fuente bloqueada durante la misma ejecución.
 
 Dar prioridad a empresas de:
 
@@ -119,6 +131,17 @@ Si la vacante redirige a Greenhouse, Lever, Ashby o Careers, utiliza la URL orig
 No inicies sesión.
 
 No resuelvas CAPTCHA.
+
+No uses ni recomiendes stealth, proxies residenciales, rotación de identidades ni otras técnicas para evadir controles de acceso o detección de bots.
+
+No delegues la búsqueda a subagentes.
+
+Para controlar tiempo, costo y tamaño del contexto:
+
+- consultar como máximo 20 bolsas o páginas de empresas por ejecución;
+- conservar como máximo 10 candidatas antes de puntuarlas;
+- reportar como máximo 5 vacantes verificadas;
+- no volver a abrir una URL ya descartada.
 
 No envíes postulaciones.
 
@@ -198,7 +221,7 @@ Vacantes recomendadas - AAAA-MM-DD
 
 ### Top oportunidades
 
-Mostrar como máximo 10 vacantes ordenadas por puntuación.
+Mostrar como máximo 5 vacantes ordenadas por puntuación.
 
 Para cada una explicar brevemente:
 
