@@ -28,11 +28,21 @@ Según la documentación de QuesadaLab, Hermes se ejecuta directamente como el u
 ├── profile.md
 ├── daily-search-prompt.md
 └── cv/
-    ├── Robert-Quesada-CV-en.pdf
-    └── Robert-Quesada-CV-es.pdf
+    ├── robert-quesada-ai-integration-en.pdf
+    ├── robert-quesada-ai-integration-es.pdf
+    ├── robert-quesada-backend-en.pdf
+    ├── robert-quesada-backend-es.pdf
+    ├── robert-quesada-devops-en.pdf
+    ├── robert-quesada-devops-es.pdf
+    ├── robert-quesada-fullstack-en.pdf
+    ├── robert-quesada-fullstack-es.pdf
+    ├── robert-quesada-java-backend-en.pdf
+    ├── robert-quesada-java-backend-es.pdf
+    ├── robert-quesada-solutions-en.pdf
+    └── robert-quesada-solutions-es.pdf
 ```
 
-Copia los dos archivos Markdown y ambos CV. Protege los documentos:
+Copia los dos archivos Markdown y los 12 CV. Los CV contienen información personal y están excluidos de Git mediante `.gitignore`; transfiérelos directamente y no los agregues al repositorio. Protege los documentos:
 
 ```bash
 chown -R hermes:hermes /home/hermes/.hermes/workspaces/job-search

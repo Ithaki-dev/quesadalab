@@ -14,7 +14,7 @@
 
 **Idiomas de búsqueda:**
 - Español
-- Inglés
+- Inglés (B2)
 
 
 
@@ -119,25 +119,27 @@ Diploma en Ingeniería de Software, Universidad Técnica Nacional (UTN), 2025.
 
 ---
 
-# Tecnologías demostradas únicamente en un CV
+# Portafolio de CV
 
-## Solo en CV español
+Hay seis CV especializados, cada uno disponible en inglés y español:
 
-- Java
-- C
-- .NET
-- Django
-- Frappe
+- `backend`: Backend Developer, Python Developer, Node.js Developer, API Developer.
+- `fullstack`: Full Stack Developer, Web Application Developer, React + backend.
+- `java-backend`: Java Backend Developer y puestos backend donde Java sea el lenguaje principal.
+- `ai-integration`: AI Integration Developer, AI Automation Developer, LLM Application Developer y API Integration.
+- `devops`: DevOps, infraestructura, sistemas, Linux, cloud support y SRE junior.
+- `solutions`: Solutions Engineer, Integration Engineer, Application Support y puestos técnico-consultivos.
 
-Estas tecnologías únicamente deben considerarse cuando la vacante se evalúe utilizando el CV en español.
+Los CV especializados cambian el énfasis, no agregan experiencia. La experiencia y las tecnologías deben validarse contra el contenido explícito del CV recomendado y este perfil.
 
----
+El nivel de inglés B2 fue confirmado por el candidato y puede usarse como dato del perfil aunque no aparezca impreso en los CV.
 
-## Solo en CV inglés
+No inferir equivalencias entre tecnologías. En particular:
 
-- GraphQL
-
-Debe utilizarse únicamente cuando se recomiende el CV en inglés.
+- C no equivale a C#.
+- .NET no demuestra automáticamente C# ni .NET Core.
+- Fundamentos de AWS no equivalen a experiencia profesional avanzada en AWS.
+- Un puesto objetivo o el título de un CV no demuestra experiencia con todas las tecnologías habituales de ese puesto.
 
 ---
 

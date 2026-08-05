@@ -3,8 +3,7 @@
 Lee cuidadosamente:
 
 - `profile.md`
-- `cv/Robert-Quesada-CV-en.pdf`
-- `cv/Robert-Quesada-CV-es.pdf`
+- los 12 CV especializados de `cv/` enumerados en la sección `Selección del CV`
 
 El objetivo es encontrar las mejores oportunidades laborales para Robert Quesada, priorizando calidad sobre cantidad.
 
@@ -18,8 +17,29 @@ Robert posee más de 10 años de experiencia en infraestructura TI y soporte emp
 - Considerar después los puestos de prioridad Media.
 - Respetar estrictamente la sección `No buscar` de `profile.md`.
 - Las tecnologías de la sección `Tecnologías objetivo` sirven para descubrir oportunidades adyacentes, pero no demuestran experiencia ni aumentan la puntuación.
-- Java, C, .NET, Django y Frappe solo pueden contarse cuando se evalúa el CV español.
-- GraphQL solo puede contarse cuando se evalúa el CV inglés.
+
+## Selección del CV
+
+Para cada vacante, elige exactamente un CV según el rol y el idioma de la publicación:
+
+| Familia de la vacante | CV en inglés | CV en español |
+|---|---|---|
+| Backend, Python, Node.js, API | `cv/robert-quesada-backend-en.pdf` | `cv/robert-quesada-backend-es.pdf` |
+| Full Stack, React, Web Application | `cv/robert-quesada-fullstack-en.pdf` | `cv/robert-quesada-fullstack-es.pdf` |
+| Java Backend | `cv/robert-quesada-java-backend-en.pdf` | `cv/robert-quesada-java-backend-es.pdf` |
+| AI Integration, AI Automation, LLM Applications | `cv/robert-quesada-ai-integration-en.pdf` | `cv/robert-quesada-ai-integration-es.pdf` |
+| DevOps, Infrastructure, Linux, Cloud Support, SRE | `cv/robert-quesada-devops-en.pdf` | `cv/robert-quesada-devops-es.pdf` |
+| Solutions, Integration, Application Support | `cv/robert-quesada-solutions-en.pdf` | `cv/robert-quesada-solutions-es.pdf` |
+
+Reglas obligatorias para escogerlo:
+
+- Usar la versión inglesa para publicaciones en inglés y la española para publicaciones en español.
+- Basar la puntuación únicamente en afirmaciones explícitas del CV seleccionado y en `profile.md`.
+- El enfoque o título del CV no demuestra por sí mismo una tecnología.
+- No convertir C o .NET en C#, ni .NET en .NET Core.
+- El nivel de inglés confirmado es B2; nunca aumentarlo a C1 ni describirlo como nativo.
+- No asumir equivalencia entre Diploma, Bachillerato, BA o Bachelor's degree. Informar cualquier requisito académico como posible brecha si la equivalencia no está clara.
+- No afirmar experiencia en Scrum o SDLC cuando la evidencia solo sea Agile, sprint planning o code reviews.
 
 ## Nivel objetivo
 
@@ -210,7 +230,7 @@ Excluir resultados menores a 60.
 - Coincidencias con el CV
 - Brechas técnicas
 - Idioma de la vacante
-- CV recomendado (inglés o español)
+- CV recomendado (nombre exacto del archivo y motivo de selección)
 - Enlace directo a la publicación
 - Fuente de descubrimiento (empresa/ATS, LinkedIn o Indeed)
 
