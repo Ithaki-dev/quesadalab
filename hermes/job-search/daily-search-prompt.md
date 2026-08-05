@@ -83,10 +83,18 @@ Utilizar buscadores únicamente para descubrir páginas de empresas y los identi
 
 Después revisar directamente las páginas públicas de empleo de empresas tecnológicas.
 
-No usar como fuente primaria sitios que estén mostrando CAPTCHA, autenticación o controles anti-bot, incluyendo:
+Usar también LinkedIn Jobs e Indeed como fuentes secundarias de descubrimiento:
 
-- LinkedIn Jobs
-- Indeed
+- realizar como máximo 5 consultas de descubrimiento por plataforma;
+- priorizar resultados cuyo título, empresa, ubicación y enlace sean visibles públicamente;
+- intentar localizar la misma vacante en la página de empleo de la empresa o en su ATS oficial;
+- usar como enlace final la publicación original de la empresa cuando exista;
+- si la página pública de LinkedIn o Indeed puede abrirse y verificarse sin autenticación, puede usarse como enlace final indicando claramente la fuente;
+- si aparece CAPTCHA, login o verificación de seguridad, no intentar evadirlo ni repetirlo durante esa ejecución;
+- si no existe una publicación oficial equivalente y la página de LinkedIn o Indeed no puede verificarse, excluir el resultado.
+
+No usar como fuente primaria otros sitios que estén mostrando CAPTCHA, autenticación o controles anti-bot, incluyendo:
+
 - Glassdoor
 - Wellfound
 - We Work Remotely
@@ -204,6 +212,7 @@ Excluir resultados menores a 60.
 - Idioma de la vacante
 - CV recomendado (inglés o español)
 - Enlace directo a la publicación
+- Fuente de descubrimiento (empresa/ATS, LinkedIn o Indeed)
 
 ## Reporte
 
