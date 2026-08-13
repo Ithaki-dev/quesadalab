@@ -44,6 +44,15 @@ Never commit `.env`, API keys, bot tokens, Gmail app passwords, sessions,
 memories or VM archives. Proxmox backups of VM 400 contain these secrets and
 must be treated as confidential.
 
+## Memoria persistente
+
+Hermes Agent utiliza **Obsidian** como memoria persistente para guardar notas, configuraciones y estado de operaciones.
+
+- **Ruta del vault:** `/opt/quesadalab/obsidian-vault`
+- **Variable de entorno:** `OBSIDIAN_VAULT_PATH`
+- **Montaje:** Vía NFS desde `docker01` (192.168.1.30) a `agent01` (192.168.1.60) en `/home/hermes/obsidian-vault`
+- **Notas de prueba:** `/home/hermes/obsidian-vault/pruebas/`
+
 ## Provider policy
 
 Hermes uses a dedicated OpenRouter key, not a ChatGPT Plus subscription or an
