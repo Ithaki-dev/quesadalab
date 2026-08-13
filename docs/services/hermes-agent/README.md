@@ -3,6 +3,11 @@
 Hermes Agent is the QuesadaLab assistant. It runs in its own Debian virtual
 machine and uses an external model provider; no model is hosted locally.
 
+For the full operational context, use:
+
+- [`AGENT-BRIEF.md`](AGENT-BRIEF.md)
+- [`../../runbooks/hermes-operations.md`](../../runbooks/hermes-operations.md)
+
 ## Production profile
 
 | Component | Value |
@@ -42,8 +47,10 @@ must be treated as confidential.
 ## Provider policy
 
 Hermes uses a dedicated OpenRouter key, not a ChatGPT Plus subscription or an
-OpenAI account token. The key is restricted by an OpenRouter guardrail and the
-default model is the free router.
+OpenAI account token. The live provider must always be verified in
+`/home/hermes/.hermes/config.yaml` and `/home/hermes/.hermes/.env` before
+making changes. The key is restricted by the provider guardrails and the
+default model is the free router unless the live configuration says otherwise.
 
 Validate authentication without printing the key:
 
