@@ -5,7 +5,7 @@ COMMAND="${1:-}"
 shift || true
 
 HERMES_VAULT_ROOT="${HERMES_VAULT_ROOT:-/home/hermes/.hermes/obsidian}"
-PERSONAL_VAULT_ROOT="${PERSONAL_VAULT_ROOT:-/opt/quesadalab/data/obsidian/personal}"
+PERSONAL_VAULT_ROOT="${PERSONAL_VAULT_ROOT:-}"
 INBOX_FILE="$HERMES_VAULT_ROOT/00-inbox.md"
 PROFILE_FILE="$HERMES_VAULT_ROOT/10-profile.md"
 PROJECTS_FILE="$HERMES_VAULT_ROOT/20-projects.md"
