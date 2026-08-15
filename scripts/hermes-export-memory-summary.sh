@@ -2,7 +2,14 @@
 set -euo pipefail
 
 HERMES_VAULT_ROOT="${1:-/home/hermes/.hermes/obsidian}"
-PERSONAL_VAULT_ROOT="${2:-/opt/quesadalab/data/obsidian/personal}"
+PERSONAL_VAULT_ROOT="${2:-}"
+if [ -z "$PERSONAL_VAULT_ROOT" ]; then
+  if [ -d /opt/quesadalab/data/obsidian/personal ]; then
+    PERSONAL_VAULT_ROOT="/opt/quesadalab/data/obsidian/personal"
+  else
+    PERSONAL_VAULT_ROOT="${HOME}/.hermes/exports/obsidian-personal"
+  fi
+fi
 EXPORT_DIR="$PERSONAL_VAULT_ROOT/Imported-from-Hermes"
 STAMP="$(date +%Y-%m-%d)"
 EXPORT_FILE="$EXPORT_DIR/hermes-summary-$STAMP.md"

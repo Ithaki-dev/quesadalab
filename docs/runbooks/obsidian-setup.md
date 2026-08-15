@@ -125,8 +125,15 @@ The export should:
 
 - include only non-secret operational summaries;
 - exclude raw chat logs and credentials;
-- write into the personal vault export folder;
+- write into the personal vault export folder when mounted, or into a local
+  staging folder on `agent01` when the personal vault is not available;
 - preserve the Hermes vault as the source of truth for agent memory.
+
+Default staging fallback on `agent01`:
+
+```text
+/home/hermes/.hermes/exports/obsidian-personal/Imported-from-Hermes
+```
 
 Example export target:
 
