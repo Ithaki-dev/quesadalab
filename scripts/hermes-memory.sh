@@ -5,7 +5,20 @@ COMMAND="${1:-}"
 shift || true
 
 HERMES_VAULT_ROOT="${HERMES_VAULT_ROOT:-/home/hermes/.hermes/obsidian}"
+HERMES_MEMORY_SECTION="${HERMES_MEMORY_SECTION:-}"
 PERSONAL_VAULT_ROOT="${PERSONAL_VAULT_ROOT:-}"
+
+if [ -n "$HERMES_MEMORY_SECTION" ]; then
+  case "$HERMES_MEMORY_SECTION" in
+    *[!A-Za-z0-9._-]*)
+      echo "[ERROR] Invalid HERMES_MEMORY_SECTION: $HERMES_MEMORY_SECTION" >&2
+      exit 1
+      ;;
+  esac
+
+  HERMES_VAULT_ROOT="$HERMES_VAULT_ROOT/$HERMES_MEMORY_SECTION"
+fi
+
 INBOX_FILE="$HERMES_VAULT_ROOT/00-inbox.md"
 PROFILE_FILE="$HERMES_VAULT_ROOT/10-profile.md"
 PROJECTS_FILE="$HERMES_VAULT_ROOT/20-projects.md"
@@ -86,6 +99,9 @@ Usage:
   hermes-memory.sh snapshot
   hermes-memory.sh export-summary
   hermes-memory.sh task-complete <summary>
+
+Optional:
+  HERMES_MEMORY_SECTION=ithakidev hermes-memory.sh task-complete <summary>
 EOF
     exit 1
     ;;
