@@ -11,9 +11,9 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [ ! -x "$SCRIPT_DIR/hermes-memory.sh" ]; then
+if [ ! -f "$SCRIPT_DIR/hermes-memory.sh" ]; then
   echo "[ERROR] Missing hermes-memory.sh next to this hook" >&2
   exit 1
 fi
 
-"$SCRIPT_DIR/hermes-memory.sh" task-complete "$SUMMARY" "$@"
+bash "$SCRIPT_DIR/hermes-memory.sh" task-complete "$SUMMARY" "$@"
