@@ -1,7 +1,7 @@
 # Hermes: IthakiDev business profile
 
-This workspace defines the operating profile for Hermes when assisting with
-IthakiDev work.
+This workspace defines the operating profile material for Hermes when assisting
+with IthakiDev work.
 
 ## Purpose
 
@@ -63,6 +63,31 @@ The IthakiDev memory section lives at:
 
 ```text
 /home/hermes/.hermes/obsidian/ithakidev
+```
+
+## Create the Hermes profile
+
+Create a real Hermes profile so IthakiDev has isolated config, sessions, memory,
+skills, and gateway state:
+
+```bash
+hermes profile create ithakidev \
+  --clone \
+  --description "IthakiDev business assistant for client work, service planning, documentation, and business operations."
+
+ithakidev config set terminal.cwd /home/hermes/.hermes/workspaces/ithakidev
+
+cp /home/hermes/.hermes/workspaces/ithakidev/operating-prompt.md \
+  /home/hermes/.hermes/profiles/ithakidev/SOUL.md
+
+chmod 600 /home/hermes/.hermes/profiles/ithakidev/SOUL.md
+```
+
+Validate:
+
+```bash
+ithakidev profile
+ithakidev chat -q "Lee tu perfil IthakiDev y responde solo ITHAKIDEV_PROFILE_OK"
 ```
 
 ## Data rules

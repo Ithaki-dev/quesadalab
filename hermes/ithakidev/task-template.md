@@ -11,6 +11,18 @@
 
 Describe the business or technical outcome.
 
+## Business relevance
+
+Select the primary driver:
+
+- Revenue
+- Client acquisition
+- Client value expansion
+- Cost reduction
+- Time reduction
+- Strategic asset
+- Operational quality
+
 ## Context
 
 Known facts:
@@ -32,6 +44,18 @@ Unknowns:
 Expected output:
 
 - 
+
+## Decision format
+
+For important decisions, include:
+
+- Diagnosis
+- Problem
+- Opportunity
+- Options
+- Recommendation
+- Action
+- Metric
 
 ## Completion Summary
 

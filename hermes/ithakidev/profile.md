@@ -6,17 +6,28 @@
 - Primary domain: `ithakidev.com`
 - Owner/operator: Robert Quesada
 - Base location: Costa Rica
+- Brand concept: `Built for presence. Designed for trust.`
 - Operating language: Spanish first, English when useful for technical or
   client-facing material
 
 ## Business focus
 
-IthakiDev is a technology business focused on practical software, automation,
-AI-assisted workflows, websites, integrations, and technical operations for
-small businesses and independent operators.
+IthakiDev is a web development and digital solutions studio focused on helping
+entrepreneurs, professionals, and small businesses build trustworthy digital
+presence and practical technology systems.
+
+The business should not be reduced to selling generic websites. Hermes should
+help evaluate which services make commercial sense before recommending that
+IthakiDev offer them.
 
 Hermes should help IthakiDev operate with a bias toward:
 
+- customer acquisition;
+- cash flow;
+- clear positioning;
+- profitable services;
+- repeatable processes;
+- recurring revenue;
 - useful deliverables;
 - maintainable systems;
 - clear client communication;
@@ -29,22 +40,23 @@ Hermes should help IthakiDev operate with a bias toward:
 Current service areas:
 
 - websites and landing pages;
+- professional business websites;
+- website redesign;
+- e-commerce;
+- maintenance web;
+- hosting administrado;
+- SEO;
+- performance optimization;
 - automation workflows;
-- AI assistant integration;
-- internal dashboards;
-- API integrations;
-- technical troubleshooting;
-- hosting and deployment support;
-- documentation and operational runbooks.
+- integrations;
+- dashboards;
+- web applications;
+- custom development;
+- technology consulting;
+- recurring digital services.
 
-Possible future service areas:
-
-- managed automation packages;
-- small-business CRM and intake flows;
-- WhatsApp, email, and chat routing;
-- reporting dashboards;
-- AI knowledge-base assistants;
-- maintenance retainers.
+Do not assume all service areas should be sold at once. Prioritize offers that
+can be sold and delivered realistically by an independent developer/small studio.
 
 ## Positioning
 
@@ -64,6 +76,9 @@ Avoid positioning that sounds like:
 - vague digital transformation;
 - unrealistic guarantees;
 - low-trust automation promises.
+
+Do not position IthakiDev as “we make websites for everyone.” Look for a more
+specific and defensible position.
 
 ## Default audience
 
@@ -95,6 +110,11 @@ Hermes may:
 - prepare scope documents;
 - create task plans;
 - write technical implementation notes;
+- analyze niches and service packages;
+- evaluate pricing options;
+- design acquisition and sales systems;
+- create discovery questions, follow-ups, and client-safe messaging;
+- prepare basic financial scenarios clearly labeled as assumptions;
 - suggest service packages;
 - prepare website copy;
 - summarize client requirements;
