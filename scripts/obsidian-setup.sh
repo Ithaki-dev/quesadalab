@@ -1,73 +1,67 @@
-#!/bin/bash
-# ============================================
-# Obsidian Setup Script for Hermes Agent
-# Ejecuta la inicialización de Obsidian en el host agent01
-# ============================================
-
+#!/usr/bin/env bash
 set -euo pipefail
 
-VAULT_PATH="/opt/quesadalab/obsidian-vault"
-HOST="192.168.1.60"  # agent01
-USER="hermes"
+VAULT_ROOT="${1:-/home/hermes/.hermes/obsidian}"
 
-# 1. Crear directorio del vault en docker01 (si no existe)
-ssh root@${HOST} "mkdir -p ${VAULT_PATH}"
-ssh root@${HOST} "chown -R 1000:1000 ${VAULT_PATH}"
+mkdir -p "$VAULT_ROOT"
+mkdir -p "$VAULT_ROOT/attachments"
+mkdir -p "$VAULT_ROOT/templates"
 
-# 2. Montar el vault vía NFS en agent01
-MOUNT_POINT="/home/hermes/obsidian-vault"
-if ! mountpoint -q "${MOUNT_POINT}"; then
-    echo "Mounting Obsidian vault from docker01 to ${MOUNT_POINT}..."
-    sudo mount -t nfs ${HOST}:${VAULT_PATH} "${MOUNT_POINT}"
-fi
+cat > "$VAULT_ROOT/00-inbox.md" <<'EOF'
+# Hermes Inbox
 
-# 4. Configurar variable de entorno en Hermes
-ENV_FILE="/home/hermes/.hermes/.env"
-if [ ! -f "${ENV_FILE}" ]; then
-    mkdir -p /home/hermes/.hermes
-    echo "OBSIDIAN_VAULT_PATH=${VAULT_PATH}" > "${ENV_FILE}"
-    chmod 600 "${ENV_FILE}"
-    echo "✅ Variable OBSIDIAN_VAULT_PATH configurada en ${ENV_FILE}"
-else
-    # Asegurarse de que la variable exista
-    if ! grep -q "^OBSIDIAN_VAULT_PATH=" "${ENV_FILE}"; then
-        echo "OBSIDIAN_VAULT_PATH=${VAULT_PATH}" >> "${ENV_FILE}"
-        echo "✅ Variable OBSIDIAN_VAULT_PATH agregada a ${ENV_FILE}"
-    fi
-fi
+Use this note for short, unreviewed facts that Hermes should remember later.
 
-# 5. Crear directorio de pruebas en el vault
-TEST_DIR="${MOUNT_POINT}/pruebas"
-mkdir -p "${TEST_DIR}"
-cat > "${TEST_DIR}/hermes_test.md" <<'TESTNOTE'
-# Nota de prueba de Hermes Agent
-
-## Generado por Hermes Agent
-
-- Fecha: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-- Propósito: Validar integración de Obsidian como memoria persistente
-
-## Contenido
-
-Hermes Agent ha sido configurado para utilizar Obsidian como memoria persistente.
-El vault se encuentra en: ${VAULT_PATH}
-
-Notas relevantes:
-- Vault path: ${VAULT_PATH}
-- Host: agent01 (192.168.1.60)
-- Usuario: hermes (UID 1000)
-
-## Validación
-
-Se puede verificar la conexión con:
-```bash
-hermes doctor
-```
-
-Esta nota será visible en la aplicación Obsidian local.
-TESTNOTE
-
-echo "✅ Obsidian setup completed!"
-echo "Vault mounted at: ${MOUNT_POINT}"
-echo "OBSIDIAN_VAULT_PATH=$OBSIDIAN_VAULT_PATH"
+- Date:
+- Source:
+- Fact:
+- Confidence:
+- Action needed:
 EOF
+
+cat > "$VAULT_ROOT/10-profile.md" <<'EOF'
+# Hermes Profile
+
+## Stable facts
+
+- Agent name: Hermes
+- Host: agent01
+- VMID: 400
+- LAN IP: 192.168.1.60
+
+## Approved context
+
+- Add stable project facts here.
+- Keep this note free of secrets.
+EOF
+
+cat > "$VAULT_ROOT/20-projects.md" <<'EOF'
+# Hermes Projects
+
+## Active work
+
+- QuesadaLab homelab operations
+- Messaging integrations
+- Scheduled workflows
+- Documentation maintenance
+EOF
+
+cat > "$VAULT_ROOT/30-operations.md" <<'EOF'
+# Hermes Operations
+
+## Current operational reminders
+
+- Do not print secrets.
+- Verify the live provider before changing models.
+- Back up before changing gateway or credentials.
+- Keep Hermes off public exposure paths.
+EOF
+
+cat > "$VAULT_ROOT/90-archive.md" <<'EOF'
+# Hermes Archive
+
+Use this note for old context that is no longer active.
+EOF
+
+echo "Hermes Obsidian vault initialized at: $VAULT_ROOT"
+echo "Suggested personal vault: /opt/quesadalab/data/obsidian/personal"

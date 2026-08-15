@@ -45,6 +45,28 @@ Relevant local paths:
 - `/home/hermes/.hermes/memories`
 - `/home/hermes/.hermes/cron`
 
+## Memory model
+
+Hermes uses Obsidian as structured memory, not as a free-form dump.
+
+Approved files:
+
+- `/home/hermes/.hermes/obsidian/00-inbox.md`
+- `/home/hermes/.hermes/obsidian/10-profile.md`
+- `/home/hermes/.hermes/obsidian/20-projects.md`
+- `/home/hermes/.hermes/obsidian/30-operations.md`
+- `/home/hermes/.hermes/obsidian/90-archive.md`
+
+Operational rules:
+
+- Record new facts in `00-inbox.md` first.
+- Promote stable facts into profile, projects, or operations notes.
+- Read only approved notes as long-term memory.
+- Export only curated summaries into the personal Obsidian vault.
+- Use `scripts/hermes-post-task-hook.sh` after important tasks to export a
+  safe summary automatically.
+- Never store secrets, tokens, recovery codes, or raw logs in Obsidian.
+
 ## Provider policy
 
 The default provider is external and must be checked in the live config before any model work. The repo history has included OpenRouter and OmniRoute during experiments, so do not assume the current provider from memory.
@@ -120,4 +142,3 @@ When asked to change Hermes:
 5. Change only the minimum required setting.
 6. Validate with a no-secret check and a real end-to-end test.
 7. Record the final state in documentation.
-

@@ -70,6 +70,39 @@ grep -nE '^(provider:|model:|  default:|  base_url:)' \
 
 Never print the value of `.env`.
 
+## Hermes memory workflow
+
+Hermes uses Obsidian as structured memory with a small set of approved notes.
+
+Recommended files:
+
+- `00-inbox.md` for fresh facts that still need review
+- `10-profile.md` for stable identity and environment facts
+- `20-projects.md` for active work
+- `30-operations.md` for operational reminders and incident notes
+- `90-archive.md` for stale context
+
+Typical command flow on `agent01`:
+
+```bash
+cd /opt/quesadalab-repo
+bash scripts/hermes-memory.sh init
+bash scripts/hermes-memory.sh remember "Example fact to review"
+bash scripts/hermes-memory.sh snapshot
+bash scripts/hermes-memory.sh export-summary
+bash scripts/hermes-memory.sh task-complete "Completed Obsidian sync setup"
+bash scripts/hermes-post-task-hook.sh "Completed Obsidian sync setup"
+```
+
+Rules:
+
+- Store only curated facts in Hermes memory.
+- Do not store passwords, API keys, recovery codes, or raw logs.
+- Use the export step to move approved summaries into the personal vault.
+- Use `task-complete` when Hermes finishes an important task and should both
+  record the result in `30-operations.md` and export a fresh summary.
+- Use `hermes-post-task-hook.sh` as the canonical post-task hook wrapper.
+
 ## Messaging validation
 
 Discord:
@@ -110,4 +143,3 @@ If Hermes stops responding:
 Use the restore runbook:
 
 - [`hermes-restore.md`](./hermes-restore.md)
-
