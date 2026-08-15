@@ -62,6 +62,11 @@ Operational rules:
 - Record new facts in `00-inbox.md` first.
 - Promote stable facts into profile, projects, or operations notes.
 - Read only approved notes as long-term memory.
+- For memory questions, search `/home/hermes/.hermes/obsidian` first.
+- Prefer `10-profile.md`, `20-projects.md`, and `30-operations.md` before
+  searching sessions, logs, or the wider filesystem.
+- Do not perform broad filesystem searches for memory facts unless the
+  approved Obsidian notes do not answer the question.
 - Export only curated summaries into the personal Obsidian vault.
 - Use `scripts/hermes-post-task-hook.sh` after important tasks to export a
   safe summary automatically.
