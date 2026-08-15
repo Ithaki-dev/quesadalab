@@ -3,6 +3,11 @@
 Hermes Agent is the QuesadaLab assistant. It runs in its own Debian virtual
 machine and uses an external model provider; no model is hosted locally.
 
+For the full operational context, use:
+
+- [`AGENT-BRIEF.md`](AGENT-BRIEF.md)
+- [`../../runbooks/hermes-operations.md`](../../runbooks/hermes-operations.md)
+
 ## Production profile
 
 | Component | Value |
@@ -39,11 +44,29 @@ Never commit `.env`, API keys, bot tokens, Gmail app passwords, sessions,
 memories or VM archives. Proxmox backups of VM 400 contain these secrets and
 must be treated as confidential.
 
+## Obsidian memory
+
+Hermes uses a dedicated Obsidian vault as structured memory. The authoritative
+design is documented here:
+
+- [`obsidian.md`](obsidian.md)
+- [`../../runbooks/obsidian-setup.md`](../../runbooks/obsidian-setup.md)
+
+Recommended vault paths:
+
+- Personal vault: `/opt/quesadalab/data/obsidian/personal`
+- Hermes vault: `/home/hermes/.hermes/obsidian`
+
+The Hermes vault is for curated operational memory only. Do not store secrets,
+tokens, recovery codes, private keys, or raw credential exports there.
+
 ## Provider policy
 
 Hermes uses a dedicated OpenRouter key, not a ChatGPT Plus subscription or an
-OpenAI account token. The key is restricted by an OpenRouter guardrail and the
-default model is the free router.
+OpenAI account token. The live provider must always be verified in
+`/home/hermes/.hermes/config.yaml` and `/home/hermes/.hermes/.env` before
+making changes. The key is restricted by the provider guardrails and the
+default model is the free router unless the live configuration says otherwise.
 
 Validate authentication without printing the key:
 

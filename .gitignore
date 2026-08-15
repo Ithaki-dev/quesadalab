@@ -47,3 +47,6 @@ Thumbs.db
 *.bak-*
 *.backup
 *.old
+# Datos privados de la búsqueda laboral
+hermes/job-search/cv/
+hermes/job-search/.env
