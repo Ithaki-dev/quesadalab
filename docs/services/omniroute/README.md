@@ -1,28 +1,27 @@
 # OmniRoute
 
-OmniRoute is an experimental, on-demand AI gateway for testing model routing,
-provider credentials and OpenAI-compatible clients. It is not part of the
-always-on QuesadaLab control plane.
+OmniRoute is the internal AI gateway used by QuesadaLab for OpenAI-compatible
+clients such as Hermes. It runs on `docker01` and is now part of the critical
+always-on service set.
 
 ## Production boundary
 
 | Item | Value |
-| --- | --- |
+|---|---|
 | Host | `docker01` |
 | Internal URL | `https://omniroute.lab` |
 | Runtime | Docker Compose |
-| Source release | `v3.8.49` |
-| Annotated tag object | `bbb3b6eab72911d4fd7e6be9315edc983e5c1a6b` |
-| Reviewed commit | `c9d4a45f1883d7daf150bbff631f3e83b41aa5b4` |
+| Source release | `v3.8.50` |
 | Image | Official AMD64 image pinned by repository digest |
+| Image digest | `sha256:085c57adf499a8aaa9f35ccde95c0df9c11bd9ecd18d6c9edbf3b68b8079ba9d` |
 | State | `/opt/quesadalab/data/omniroute` |
 | Redis state | `/opt/quesadalab/data/omniroute-redis` |
 | Exposure | LAN only through Traefik |
-| Normal state | Stopped |
+| Normal state | Running |
+| Restart policy | `unless-stopped` |
 
-Hermes remains connected directly to OpenRouter until OmniRoute has passed
-functional and stability tests. Do not add a Cloudflare Tunnel route for this
-service.
+Do not add a Cloudflare Tunnel route for this service unless a separate review
+approves the exposure model.
 
 ## Security model
 
@@ -35,26 +34,39 @@ service.
 - JWT, API-key, storage-encryption and bootstrap credentials live only in the
   deployed `.env`, never in Git.
 - All OpenAI-compatible `/v1` requests require a dedicated OmniRoute API key.
-- Backups contain provider credentials and must be treated as confidential.
+- Backups contain provider credentials and client API keys and must be treated
+  as confidential.
 
 ## Resource profile
 
-The production limit is 1536 MiB and 1.5 CPU for OmniRoute, plus 128 MiB and
-0.5 CPU for Redis. `OMNIROUTE_MEMORY_MB=768` limits the Node.js heap and leaves
-approximately 768 MiB for native allocations and runtime overhead. The
-application limit was increased after Docker recorded an OOM termination while
-testing release 3.8.49 with the former 1 GiB limit.
+The repository keeps the current container limits unchanged:
 
-## Release 3.8.49 provider limitation
+- OmniRoute: 1536 MiB, 1.5 CPU, PID limit 256.
+- Redis: 128 MiB, 0.5 CPU, PID limit 128.
+- `OMNIROUTE_MEMORY_MB=768` controls the Node.js heap in the live `.env`.
 
-The zero-credential OpenCode routes advertised by upstream are not considered
-production-ready in this deployment. Direct `oc/...` requests can fail while
-attempting to connect to `0.0.0.0:443`. An `auto/best-free` success does not by
-itself validate zero-credential operation because the combo can fall back to a
-configured provider such as OpenRouter.
+Do not increase CPU, memory, PID limits, healthchecks, networks, volumes or
+security settings without a separate capacity review. OmniRoute previously hit
+OOM during testing, so upgrades should include post-deploy memory observation.
 
-Keep Hermes on its validated direct provider path until both a direct
-zero-credential route and the intended `auto/...` route pass from `agent01`.
+## Current provider notes
+
+Hermes and other clients should use a dedicated OmniRoute client API key. Do not
+expose provider credentials directly to clients.
+
+Validated behavior after moving to `v3.8.50`:
+
+- `auto/best-free` works with low token limits.
+- `oc/big-pickle` works with low token limits.
+- Plain `auto` can route to OpenRouter and fail if the request asks for too many
+  output tokens. Keep Hermes on a validated model such as `auto/best-free` until
+  token defaults are reviewed.
+- Kiro requires an active provider credential in OmniRoute. If Kiro reports
+  `No active credentials`, reconnect it in the OmniRoute dashboard before using
+  it in routing pools.
+
+OpenRouter is an external provider. OmniRoute is the internal gateway. Do not
+use the two names interchangeably in documentation or operations.
 
 ## Prepare the image
 
@@ -65,8 +77,12 @@ cd /opt/quesadalab-repo
 sudo ./scripts/prepare-omniroute-image.sh
 ```
 
-The script downloads
-`docker.io/diegosouzapw/omniroute@sha256:92c768c56e2de32c51a0621ef182835018b00b288c9bb235c5c5e4514658c1a1`.
+The script downloads and validates:
+
+```text
+docker.io/diegosouzapw/omniroute@sha256:085c57adf499a8aaa9f35ccde95c0df9c11bd9ecd18d6c9edbf3b68b8079ba9d
+```
+
 It verifies the immutable repository digest, Linux/AMD64 platform, non-root
 `node` user and upstream source label. It does not compile source or start a
 container.
@@ -85,8 +101,8 @@ sudo install -o root -g root -m 0600 \
   .env.example .env
 ```
 
-Replace every `replace-with-...` value. Generate the three 64-character
-secrets independently:
+Replace every `replace-with-...` value. Generate independent 64-character
+secrets with:
 
 ```bash
 openssl rand -hex 32
@@ -97,38 +113,39 @@ issues, chat, logs or commits.
 
 ## Deploy and validate
 
-Create the AdGuard record `omniroute.lab -> 192.168.1.30`, then:
+Create or verify the AdGuard record `omniroute.lab -> 192.168.1.30`, then:
 
 ```bash
 cd /opt/quesadalab-repo
 sudo ./deploy.sh omniroute
 
 docker inspect omniroute omniroute-redis \
-  --format 'name={{.Name}} status={{.State.Status}} health={{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}'
+  --format 'name={{.Name}} status={{.State.Status}} health={{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}} restart={{.HostConfig.RestartPolicy.Name}}'
 
 curl --silent --show-error --output /dev/null \
   --write-out 'OmniRoute HTTPS %{http_code}\n' \
   https://omniroute.lab/
 ```
 
-Complete the bootstrap login, change the initial password if the UI offers that
-control, and add only a dedicated low-limit provider credential. Create
-separate, least-privilege OmniRoute client keys for each consumer; never expose
-the provider credential directly to Hermes or other clients.
+Complete bootstrap login, change the initial password if the UI offers that
+control, and create least-privilege client keys for consumers.
 
-## Operate on demand
+## Operations
 
-Start:
+OmniRoute is persistent and should be started by Compose with
+`restart: unless-stopped`.
+
+Start or recreate:
 
 ```bash
 docker compose \
   --project-directory /opt/quesadalab/stacks/omniroute \
   --env-file /opt/quesadalab/stacks/omniroute/.env \
   --file /opt/quesadalab/stacks/omniroute/docker-compose.yml \
-  start
+  up -d
 ```
 
-Stop:
+Stop only for approved maintenance:
 
 ```bash
 docker compose \
@@ -138,8 +155,7 @@ docker compose \
   stop --timeout 60
 ```
 
-Use `stop`, not `down --volumes`. The stack uses `restart: "no"` and is
-intentionally excluded from `deploy.sh all`.
+Use `stop`, not `down --volumes`.
 
 See [OmniRoute backup and restore](../../runbooks/omniroute-backup-restore.md)
 before upgrades or provider changes.
