@@ -1,113 +1,56 @@
 # Grafana
 
-## Descripción
+Grafana is the visualization layer for QuesadaLab metrics. It uses Prometheus as
+its datasource to inspect host, container and service trends.
 
-Grafana es la plataforma de visualización y análisis de métricas utilizada por QuesadaLab.
+## Service information
 
-Se integra con Prometheus como fuente de datos para visualizar el estado del servidor Docker, los contenedores y los servicios de infraestructura mediante dashboards interactivos.
-
-Grafana constituye la capa de visualización de la plataforma de observabilidad del laboratorio.
-
----
-
-## Objetivos
-
-- Visualizar métricas del host Docker.
-- Visualizar métricas de los contenedores.
-- Analizar tendencias históricas.
-- Centralizar dashboards de infraestructura.
-- Integrarse con Prometheus.
-
----
-
-## Información del servicio
-
-| Parámetro | Valor |
-|-----------|-------|
-| Servicio | Grafana |
-| Contenedor | grafana |
-| Imagen | grafana/grafana:latest |
-| Puerto interno | 3000 |
-| Acceso | http://grafana.lab |
+| Parameter | Value |
+|---|---|
+| Service | Grafana |
+| Container | `grafana` |
+| Image | `grafana/grafana:latest` |
+| Internal port | `3000` |
+| Access | `http://grafana.lab` |
 | Proxy | Traefik |
-| Red Docker | proxy, monitoring |
+| Docker networks | `proxy`, `monitoring` |
+| State | `/opt/quesadalab/data/grafana` |
+| Normal state | Stopped until needed |
 
----
+## Lifecycle
 
-## Integraciones
+Grafana remains under demand. Do not make it part of the permanent service
+baseline unless a separate resource review approves that change.
 
-Grafana utiliza como fuente de datos:
+Prometheus remains running while Grafana is stopped, so historical metrics keep
+accumulating.
 
-- Prometheus
+Start:
 
-Prometheus recopila métricas desde:
-
-- Node Exporter
-- cAdvisor
-- Prometheus
-
-Grafana también se integra con:
-
-- Homepage
-- Uptime Kuma
-
----
-
-## Dashboards instalados
-
-### Host Docker
-
-Métricas del servidor Debian:
-
-- CPU
-- Memoria
-- Disco
-- Red
-- Load Average
-- Uptime
-
----
-
-### Docker Containers
-
-Métricas por contenedor:
-
-- CPU
-- RAM
-- Red
-- Disco
-- Estado
-
----
-
-### Prometheus
-
-Visualización del estado de Prometheus y sus Targets.
-
----
-
-## Estado
-
-✅ Producción
-
----
-
-## Directorios
-
-Docker Compose
-
-```
-/opt/quesadalab/stacks/grafana
+```bash
+docker compose \
+  --project-directory /opt/quesadalab/stacks/grafana \
+  --env-file /opt/quesadalab/stacks/grafana/.env \
+  --file /opt/quesadalab/stacks/grafana/docker-compose.yml \
+  start
 ```
 
-Configuración
+Stop:
 
-```
-/opt/quesadalab/config/grafana
+```bash
+docker compose \
+  --project-directory /opt/quesadalab/stacks/grafana \
+  --env-file /opt/quesadalab/stacks/grafana/.env \
+  --file /opt/quesadalab/stacks/grafana/docker-compose.yml \
+  stop --timeout 60
 ```
 
-Datos
+## Datasource
 
+Grafana uses Prometheus:
+
+```text
+http://prometheus:9090
 ```
-/opt/quesadalab/data/grafana
-```
+
+See [`../prometheus/README.md`](../prometheus/README.md).
