@@ -56,10 +56,15 @@ is `73e9b30451247de5ce903bcacec89fe38d940f16db5712f437e9bae08a0929e7`.
 This allows host-side checks without disabling certificate verification. Never
 copy the root or intermediate private keys to Proxmox.
 
-## On-demand lifecycle
+## Retirement status
 
-VM 300 remains stopped to reserve memory for Hermes. Start it only when home
-automation work is required:
+VM 300 remains stopped and is in retirement. It is retained temporarily for
+reference, data recovery or an explicitly approved final migration. Do not
+delete the VM, DNS, TLS or Traefik route until removal is explicitly approved.
+
+Keep `onboot=0`.
+
+Start it only for approved recovery or migration work:
 
 ```bash
 qm start 300
@@ -104,8 +109,8 @@ Create an encrypted native HAOS backup before updates or important
 configuration changes. Keep its emergency kit outside the server.
 
 The Proxmox job `homeassistant-daily` remains configured but disabled while the
-VM is on demand. Create an approved manual USB backup before extended
-shutdowns and before reallocating resources. See
+VM is in retirement. Create an approved manual USB backup before final removal
+or any recovery/migration work. See
 [`../../runbooks/home-assistant-backup.md`](../../runbooks/home-assistant-backup.md)
 and
 [`../../runbooks/home-assistant-restore.md`](../../runbooks/home-assistant-restore.md).
