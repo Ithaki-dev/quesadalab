@@ -4,7 +4,7 @@ services:
   omniroute:
     image: ${OMNIROUTE_IMAGE}
     container_name: omniroute
-    restart: "no"
+    restart: unless-stopped
     env_file:
       - .env
     environment:
@@ -50,7 +50,7 @@ services:
   omniroute-redis:
     image: redis:8.6.2-alpine
     container_name: omniroute-redis
-    restart: "no"
+    restart: unless-stopped
     command:
       - redis-server
       - --appendonly
