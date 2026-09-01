@@ -1,10 +1,13 @@
-- Servicios esenciales:
-    - Homepage:
-        icon: homepage.svg
-        href: https://cloud.ithakidev.com
-        description: Panel central protegido por Cloudflare Access
+- Servicios críticos:
+    - Traefik:
+        icon: traefik-proxy.svg
+        href: http://traefik.lab/dashboard/
+        description: Entrada interna para aplicaciones LAN
         server: my-docker
-        container: homepage
+        container: traefik
+        widget:
+          type: traefik
+          url: http://traefik:8080
 
     - Cloudflare Tunnel:
         icon: cloudflare.svg
@@ -12,6 +15,28 @@
         description: Acceso remoto seguro a QuesadaLab
         server: my-docker
         container: cloudflared
+
+    - Vaultwarden:
+        icon: vaultwarden.svg
+        href: https://vault.lab
+        description: Gestor privado de contraseñas
+        server: my-docker
+        container: vaultwarden
+
+    - OmniRoute:
+        icon: mdi-routes
+        href: https://omniroute.lab
+        description: Gateway de IA para Hermes y clientes OpenAI-compatible
+        server: my-docker
+        container: omniroute
+
+- Servicios permanentes:
+    - Homepage:
+        icon: homepage.svg
+        href: https://cloud.ithakidev.com
+        description: Panel central protegido por Cloudflare Access
+        server: my-docker
+        container: homepage
 
     - Uptime Kuma:
         icon: uptime-kuma.svg
@@ -27,18 +52,31 @@
         server: my-docker
         container: nextcloud
 
-    - Vaultwarden:
-        icon: vaultwarden.svg
-        href: https://vault.lab
-        description: Gestor privado de contraseñas
+    - Portainer:
+        icon: portainer.svg
+        href: http://portainer.lab
+        description: Administración de Docker
         server: my-docker
-        container: vaultwarden
+        container: portainer
+
+    - Prometheus:
+        icon: prometheus.svg
+        href: http://prometheus.lab
+        description: Métricas históricas · retención 30 días / 5 GB
+        server: my-docker
+        container: prometheus
+
+    - Node Exporter:
+        icon: prometheus.svg
+        description: Métricas básicas de docker01
+        server: my-docker
+        container: node-exporter
 
 - Hermes Agent:
     - Agent01:
         icon: mdi-robot-outline
         href: ssh://hermes@192.168.1.60
-        description: 4 vCPU · 4 GiB RAM · 64 GB · modelo externo
+        description: 4 vCPU · 4 GiB RAM · 64 GB · proveedor externo
 
     - Discord:
         icon: discord.svg
@@ -59,7 +97,7 @@
     - Proxmox:
         icon: proxmox.svg
         href: https://192.168.1.10:8006
-        description: Hipervisor principal · nodo quesada
+        description: Proxmox VE 9.2.4 · nodo quesada
         widget:
           type: proxmox
           url: "{{HOMEPAGE_VAR_PROXMOX_URL}}"
@@ -75,7 +113,7 @@
     - OpenWrt:
         icon: openwrt.svg
         href: http://192.168.1.1
-        description: Router y firewall
+        description: Router y firewall LAN
 
     - AdGuard Home:
         icon: adguard-home.svg
@@ -92,37 +130,7 @@
             - filtered
             - latency
 
-    - Portainer:
-        icon: portainer.svg
-        href: http://portainer.lab
-        description: Administración de Docker
-        server: my-docker
-        container: portainer
-
-    - Traefik:
-        icon: traefik-proxy.svg
-        href: http://traefik.lab/dashboard/
-        description: Proxy inverso interno
-        server: my-docker
-        container: traefik
-        widget:
-          type: traefik
-          url: http://traefik:8080
-
 - Bajo demanda:
-    - OmniRoute:
-        icon: mdi-routes
-        href: https://omniroute.lab
-        description: Gateway de IA experimental
-        server: my-docker
-        container: omniroute
-
-    - Home Assistant:
-        icon: home-assistant.svg
-        href: https://homeassistant.lab
-        description: VM 300 · automatización del hogar
-        siteMonitor: http://192.168.1.40:8123
-
     - Immich:
         icon: immich.svg
         href: https://immich.lab
@@ -140,30 +148,24 @@
     - Grafana:
         icon: grafana.svg
         href: http://grafana.lab
-        description: Visualización de métricas
+        description: Visualización de métricas bajo demanda
         server: my-docker
         container: grafana
 
-    - Prometheus:
-        icon: prometheus.svg
-        href: http://prometheus.lab
-        description: Almacenamiento de métricas
-        server: my-docker
-        container: prometheus
-
     - cAdvisor:
         icon: mdi-chart-box-outline
-        description: Métricas detalladas de contenedores
+        description: Métricas detalladas de contenedores bajo demanda
         server: my-docker
         container: cadvisor
 
-- Diagnóstico:
-    - Node Exporter:
-        icon: prometheus.svg
-        description: Métricas básicas de docker01
-        server: my-docker
-        container: node-exporter
+- En retirada:
+    - Home Assistant:
+        icon: home-assistant.svg
+        href: https://homeassistant.lab
+        description: VM 300 · pendiente de eliminación futura
+        siteMonitor: http://192.168.1.40:8123
 
+- Diagnóstico:
     - Whoami:
         icon: mdi-information-outline
         href: http://whoami.lab
