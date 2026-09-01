@@ -26,16 +26,16 @@ README.md
 | Homepage | Always on | [`homepage`](homepage/README.md) |
 | Uptime Kuma | Always on | [`uptime-kuma`](uptime-kuma/README.md) |
 | Node Exporter | Always on | [`node-exporter`](node-exporter/README.md) |
+| Prometheus | Always on | [`prometheus`](prometheus/README.md) |
 | Nextcloud | Always on | [`nextcloud`](nextcloud/README.md) |
 | Vaultwarden | Always on | [`vaultwarden`](vaultwarden/README.md) |
+| OmniRoute | Always on, critical | [`omniroute`](omniroute/README.md) |
 | Hermes Agent | Always on | [`hermes-agent`](hermes-agent/README.md) |
-| Home Assistant | On demand | [`home-assistant`](home-assistant/README.md) |
 | Immich | On demand | [`immich`](immich/README.md) |
 | Jellyfin | On demand | [`jellyfin`](jellyfin/README.md) |
-| Prometheus | On demand | [`prometheus`](prometheus/README.md) |
 | Grafana | On demand | [`grafana`](grafana/README.md) |
 | cAdvisor | On demand | [`cadvisor`](cadvisor/README.md) |
-| OmniRoute | On demand, experimental | [`omniroute`](omniroute/README.md) |
+| Home Assistant | Retiring | [`home-assistant`](home-assistant/README.md) |
 
 Planned services are not listed as deployed until their implementation and
 validation are complete.
