@@ -1,80 +1,69 @@
 # Arquitectura de Red
 
-## Descripción
+La red de QuesadaLab usa OpenWrt como router principal y Proxmox VE como
+plataforma de virtualización.
 
-La infraestructura de red de QuesadaLab está basada en OpenWrt como router principal y Proxmox VE como plataforma de virtualización.
+OpenWrt proporciona:
 
-OpenWrt proporciona los servicios de red fundamentales:
+- gateway LAN;
+- firewall;
+- DHCP;
+- gestión de clientes.
 
-- Gateway
-- Firewall
-- Servidor DHCP
-- Gestión de clientes
-- Resolución de nombres locales
+AdGuard Home se ejecuta en LXC 100 y actúa como DNS principal de la red local.
+Los nombres internos `*.lab` resuelven hacia Traefik en `docker01`
+(`192.168.1.30`) salvo excepciones explícitas documentadas.
 
-AdGuard Home se ejecuta en un contenedor LXC Debian dentro de Proxmox y actúa como servidor DNS principal para toda la red doméstica.
+## Rutas principales
 
-Las aplicaciones HTTPS internas resuelven a Traefik en `192.168.1.30`.
-Home Assistant mantiene su backend HAOS en `192.168.1.40:8123`, pero
-`homeassistant.lab` resuelve a Traefik para aplicar TLS, restricciones LAN y
-cabeceras de seguridad de forma coherente.
+- Clientes LAN → OpenWrt → AdGuard para resolución DNS.
+- Clientes LAN → Traefik para aplicaciones internas.
+- Cloudflare Access → Cloudflare Tunnel → Homepage para acceso remoto
+  controlado.
+- Hermes en `agent01` → OmniRoute y proveedores externos.
+- Prometheus → Node Exporter siempre activo.
+- Prometheus → cAdvisor únicamente cuando cAdvisor está encendido bajo demanda.
+- Grafana → Prometheus cuando Grafana está encendido bajo demanda.
 
-Hermes reside en `agent01` (`192.168.1.60`) y se comunica hacia Internet para
-usar OpenRouter y las API de Discord, Telegram y Gmail. No acepta conexiones
-públicas entrantes.
+## Servicios y direcciones
 
-El acceso remoto al dashboard sigue una ruta independiente:
-`cloud.ithakidev.com -> Cloudflare Access -> Cloudflare Tunnel -> Homepage`.
-El conector `cloudflared` realiza únicamente conexiones salientes desde
-`docker01`; el router no publica puertos.
+| Componente | Dirección / ruta | Estado |
+|---|---|---|
+| OpenWrt | `192.168.1.1` | Siempre activo |
+| Proxmox `quesada` | `192.168.1.10` | Crítico |
+| AdGuard LXC 100 | `192.168.1.20` | Crítico |
+| Traefik / Docker VM 200 | `192.168.1.30` | Crítico |
+| Home Assistant VM 300 | `192.168.1.40:8123` | En retirada |
+| Hermes VM 400 | `192.168.1.60` | Crítico |
 
----
+## Acceso remoto
 
-## Arquitectura
+El acceso remoto al dashboard principal usa:
 
 ```text
- Internet
-    │
-    ├── Cloudflare Access ── Tunnel saliente ── Homepage (`docker01`)
-    │
- ISP / OpenWrt 192.168.1.1
-    │
-    ├── AdGuard Home 192.168.1.20
-    │      └── DNS interno y reenvío cifrado
-    │
-    ├── docker01 192.168.1.30
-    │      ├── Traefik
-    │      ├── servicios Docker
-    │      └── cloudflared
-    │
-    ├── Home Assistant OS 192.168.1.40 (bajo demanda)
-    │
-    └── agent01 / Hermes 192.168.1.60
-           └── OpenRouter + Discord + Telegram + Gmail
-
-──────────────────────────────────────────────
-
-Clientes
-
-• Windows PC
-• Smart TVs
-• Echo Dot
-• Teléfonos
-• Clientes administrados
+cloud.ithakidev.com -> Cloudflare Access -> Cloudflare Tunnel -> Homepage
 ```
 
----
+El conector `cloudflared` hace conexiones salientes desde `docker01`. El router
+no publica puertos entrantes para estos servicios.
 
-## Objetivos
+## Home Assistant
 
-- Centralizar la administración de la red.
-- Proporcionar filtrado DNS.
-- Mejorar la privacidad.
-- Reducir publicidad.
-- Preparar la infraestructura para futuros servicios.
+Home Assistant conserva el backend HAOS en `192.168.1.40:8123`, pero
+`homeassistant.lab` resuelve a Traefik para aplicar TLS, restricciones LAN y
+cabeceras de seguridad. El servicio está en retirada y pendiente de eliminación
+futura; no debe documentarse como servicio bajo demanda activo.
 
----
+## Hermes y proveedores externos
 
-## Estado
+Hermes reside en `agent01` (`192.168.1.60`) y se comunica hacia proveedores
+externos según la configuración viva de cada perfil. OpenRouter puede existir
+como proveedor externo directo en perfiles o como backend configurado dentro de
+OmniRoute. No confundir OpenRouter con OmniRoute: OmniRoute es el gateway
+interno en `docker01`; OpenRouter es un proveedor externo.
 
-✅ Operativo
+## Observabilidad
+
+Prometheus es permanente y está expuesto internamente mediante
+`http://prometheus.lab`. Grafana y cAdvisor permanecen bajo demanda. Si cAdvisor
+está apagado, su target en Prometheus aparecerá `DOWN` por diseño.
