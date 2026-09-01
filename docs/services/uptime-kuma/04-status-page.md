@@ -2,82 +2,75 @@
 
 ## Objetivo
 
-La Status Page de Uptime Kuma proporciona una vista pública o privada del estado de todos los servicios críticos de QuesadaLab.
-
-Permite consultar rápidamente la disponibilidad de la infraestructura sin necesidad de acceder al panel administrativo.
-
----
+La Status Page de Uptime Kuma proporciona una vista privada del estado de los
+servicios de QuesadaLab.
 
 ## URL
 
-```
+```text
 http://status.lab
 ```
 
----
-
 ## Servicios monitorizados
 
-### 🖥 Infraestructura
+### Infraestructura
 
 - Proxmox VE
-- Docker VM
+- Docker VM `docker01`
+- Hermes VM `agent01`
 
-### 🌐 Red
+### Red
 
 - OpenWrt
 - AdGuard Home
 - Internet
 
-### ⚙️ Servicios Core
+### Críticos
+
+- Traefik
+- Cloudflare Tunnel
+- Vaultwarden
+- OmniRoute
+
+### Permanentes no críticos
 
 - Homepage
-- Traefik
 - Portainer
 - Uptime Kuma
-
-### 📦 Aplicaciones
-
-Este grupo incluye:
-
-- Grafana
+- Nextcloud
+- Node Exporter
 - Prometheus
-- Vaultwarden
+
+### Bajo demanda
+
 - Immich
 - Jellyfin
-- Nextcloud
-- Home Assistant
+- Grafana
+- cAdvisor
 
----
+### En retirada
+
+- Home Assistant
 
 ## Configuración
 
-La Status Page utiliza los grupos definidos en Uptime Kuma para organizar los servicios.
+Cada monitor se actualiza normalmente cada 60 segundos.
 
-Cada monitor se actualiza cada 60 segundos.
+Home Assistant se supervisa mediante `https://homeassistant.lab/` solo cuando VM
+300 está encendida para recuperación o migración. El monitor debe permanecer
+pausado mientras la VM esté en retirada y apagada.
 
-Home Assistant se supervisa mediante `https://homeassistant.lab/` cuando VM 300
-está en ejecución. El monitor debe permanecer pausado durante su apagado
-planificado. Cuando se habilita, acepta códigos 200-299 y conserva la
-verificación TLS para validar DNS, PKI interna, Traefik y backend HAOS.
+Los monitores de Immich, Jellyfin, Grafana y cAdvisor deben entrar en
+mantenimiento cuando sus stacks estén detenidos deliberadamente.
 
-Los monitores de Immich, Jellyfin, Grafana, Prometheus y cAdvisor también deben
-entrar en mantenimiento cuando sus stacks estén detenidos deliberadamente.
-
----
-
-## Objetivos
-
-- Supervisión centralizada
-- Detección rápida de fallos
-- Historial de disponibilidad
-- Panel de estado del laboratorio
-
----
+Prometheus es permanente. Si cAdvisor está apagado, el target `cadvisor:8080`
+puede aparecer `DOWN` en Prometheus; eso representa el ciclo de vida bajo
+demanda de cAdvisor, no una falla de Prometheus.
 
 ## Buenas prácticas
 
-- Utilizar HTTP para servicios web.
-- Utilizar Ping para dispositivos de red.
-- Mantener grupos organizados.
+- Usar HTTP(S) para servicios web.
+- Usar Ping para dispositivos de red.
+- Mantener grupos organizados por criticidad.
 - Documentar cada nuevo monitor incorporado.
+- No tratar servicios bajo demanda apagados como incidentes activos.

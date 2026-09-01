@@ -20,8 +20,8 @@ For the full operational context, use:
 | Emergency swap | 2 GiB, `vm.swappiness=10` |
 | Guest integration | QEMU Guest Agent and periodic trim |
 | Hermes data | `/home/hermes/.hermes` |
-| Default provider | OpenRouter |
-| Default model | `openrouter/free` |
+| Default provider | Verify live config; current deployments may use OmniRoute or OpenRouter |
+| Default model | Verify live config; do not assume from repo history |
 | Gateway service | User unit `hermes-gateway.service` with linger |
 
 The VM starts with Proxmox (`onboot=1`). Its resource profile assumes Home
@@ -62,17 +62,19 @@ tokens, recovery codes, private keys, or raw credential exports there.
 
 ## Provider policy
 
-Hermes uses a dedicated OpenRouter key, not a ChatGPT Plus subscription or an
-OpenAI account token. The live provider must always be verified in
-`/home/hermes/.hermes/config.yaml` and `/home/hermes/.hermes/.env` before
-making changes. The key is restricted by the provider guardrails and the
-default model is the free router unless the live configuration says otherwise.
+Hermes uses an external model provider, not a locally hosted model. The live
+provider must always be verified in `/home/hermes/.hermes/config.yaml` and
+`/home/hermes/.hermes/.env` before making changes. Repo history includes both
+direct OpenRouter use and OmniRoute as an internal gateway.
+
+OpenRouter is an external provider. OmniRoute is the internal gateway on
+`docker01`. Do not confuse the two when diagnosing model failures.
 
 Validate authentication without printing the key:
 
 ```bash
-grep -q '^OPENROUTER_API_KEY=' "$HOME/.hermes/.env" &&
-  echo '[OK] OpenRouter key is configured'
+grep -nE '^(OPENROUTER_API_KEY|OPENAI_API_KEY|CUSTOM_API_KEY|SSL_CERT_FILE)=' \
+  "$HOME/.hermes/.env" | sed 's/=.*/=[CONFIGURED]/'
 
 grep -nE '^(model:|  default:|  provider:)' \
   "$HOME/.hermes/config.yaml"

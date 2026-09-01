@@ -1,75 +1,65 @@
 # Prometheus
 
-## Descripción
+Prometheus is the permanent metrics store for QuesadaLab. It collects historical
+metrics from always-on exporters and exposes data for Grafana and future
+consumers such as Quesada-Mobile.
 
-Prometheus es el sistema de recolección y almacenamiento de métricas utilizado por QuesadaLab.
+## Service information
 
-Su función es recopilar métricas de la infraestructura mediante el modelo *pull*, almacenarlas en una base de datos de series temporales (TSDB) y ponerlas a disposición para consultas y visualización.
-
-Prometheus constituye la base de la plataforma de observabilidad del laboratorio.
-
----
-
-## Objetivos
-
-- Centralizar la recolección de métricas.
-- Supervisar el estado del host Docker.
-- Supervisar contenedores Docker.
-- Servir como fuente de datos para Grafana.
-- Facilitar la generación de alertas y dashboards.
-
----
-
-## Información del servicio
-
-| Parámetro | Valor |
-|-----------|-------|
-| Servicio | Prometheus |
-| Contenedor | prometheus |
-| Imagen | prom/prometheus:latest |
-| Puerto interno | 9090 |
-| Acceso | http://prometheus.lab |
+| Parameter | Value |
+|---|---|
+| Service | Prometheus |
+| Container | `prometheus` |
+| Image | `prom/prometheus:latest` |
+| Internal port | `9090` |
+| Access | `http://prometheus.lab` |
 | Proxy | Traefik |
-| Red Docker | proxy, monitoring |
+| Docker networks | `proxy`, `monitoring` |
+| State | `/opt/quesadalab/data/prometheus` |
+| Normal state | Running |
+| Restart policy | `unless-stopped` |
 
----
+## Retention
 
-## Componentes asociados
+Prometheus keeps historical data with both time and size controls:
 
-Prometheus recopilará métricas de:
+- `--storage.tsdb.retention.time=30d`
+- `--storage.tsdb.retention.size=5GB`
 
-- Node Exporter
-- cAdvisor
-- Prometheus (Self Monitoring)
+The size cap prevents uncontrolled TSDB growth while preserving recent history.
+Do not delete `/opt/quesadalab/data/prometheus` during normal maintenance.
 
-Posteriormente se integrará con:
+## Scrape targets
 
-- Grafana
+Prometheus collects:
 
----
+- Prometheus self-metrics.
+- Node Exporter on the always-on monitoring path.
+- cAdvisor when cAdvisor is intentionally started under demand.
 
-## Estado
+The cAdvisor target remains configured even though cAdvisor is not permanent.
+When cAdvisor is stopped intentionally, Prometheus will show that target as
+`DOWN`. Treat that as expected service lifecycle state, not as a Prometheus
+failure.
 
-✅ Producción
+## Grafana relationship
 
----
+Grafana remains under demand. It consumes Prometheus when Grafana is running,
+but Prometheus does not depend on Grafana.
 
-## Directorios
+## Validation
 
-Docker Compose
+```bash
+docker inspect prometheus \
+  --format 'name={{.Name}} status={{.State.Status}} restart={{.HostConfig.RestartPolicy.Name}} image={{.Config.Image}}'
 
+curl --silent --show-error --output /dev/null \
+  --write-out 'Prometheus ready HTTP %{http_code}\n' \
+  http://prometheus.lab/-/ready
 ```
-/opt/quesadalab/stacks/prometheus
-```
 
-Configuración
+## Quesada-Mobile
 
-```
-/opt/quesadalab/config/prometheus
-```
-
-Datos
-
-```
-/opt/quesadalab/data/prometheus
-```
+Quesada-Mobile is planned, not operational. It may consume Prometheus for
+historical data in the future, but it must not depend exclusively on Prometheus
+for real-time operational state.

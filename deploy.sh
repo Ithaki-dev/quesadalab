@@ -19,14 +19,13 @@ readonly HEALTH_INTERVAL=5
 readonly -a DEPLOY_ORDER=(
     traefik
     node-exporter
-    cadvisor
     prometheus
-    grafana
     portainer
     uptime-kuma
     homepage
     cloudflared
     vaultwarden
+    omniroute
 )
 
 COMMAND=""

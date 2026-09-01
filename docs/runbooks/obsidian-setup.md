@@ -125,14 +125,83 @@ The export should:
 
 - include only non-secret operational summaries;
 - exclude raw chat logs and credentials;
-- write into the personal vault export folder;
+- write into the personal vault export folder when mounted, or into a local
+  staging folder on `agent01` when the personal vault is not available;
 - preserve the Hermes vault as the source of truth for agent memory.
+
+Default staging fallback on `agent01`:
+
+```text
+/home/hermes/.hermes/exports/obsidian-personal/Imported-from-Hermes
+```
 
 Example export target:
 
 ```text
 /opt/quesadalab/data/obsidian/personal/Imported-from-Hermes/hermes-summary-YYYY-MM-DD.md
 ```
+
+## Shared export folder
+
+Use SSHFS to mount the personal vault export folder from `docker01` into the
+same staging path used by Hermes on `agent01`.
+
+Recommended mount point on `agent01`:
+
+```text
+/home/hermes/.hermes/exports/obsidian-personal
+```
+
+Remote target on `docker01`:
+
+```text
+/opt/quesadalab/data/obsidian/personal
+```
+
+This keeps Hermes local memory private while allowing approved exports to land
+directly in the personal Obsidian vault.
+
+On `docker01`, prepare the destination and a dedicated export user:
+
+```bash
+install -d -m 0750 /opt/quesadalab/data/obsidian/personal/Imported-from-Hermes
+id obsidian-export >/dev/null 2>&1 || useradd --system --home-dir /nonexistent --shell /usr/sbin/nologin obsidian-export
+chown -R obsidian-export:obsidian-export /opt/quesadalab/data/obsidian/personal/Imported-from-Hermes
+```
+
+On `agent01`, install SSHFS if needed and create the mount point:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y sshfs
+mkdir -p /home/hermes/.hermes/exports/obsidian-personal
+```
+
+Validate SSH access from `agent01` to `docker01` before mounting:
+
+```bash
+ssh obsidian-export@192.168.1.30 'test -d /opt/quesadalab/data/obsidian/personal/Imported-from-Hermes && echo "[OK] export folder exists"'
+```
+
+Mount the shared folder:
+
+```bash
+sshfs \
+  obsidian-export@192.168.1.30:/opt/quesadalab/data/obsidian/personal \
+  /home/hermes/.hermes/exports/obsidian-personal \
+  -o reconnect,ServerAliveInterval=30,ServerAliveCountMax=3
+```
+
+Validate the mount:
+
+```bash
+mountpoint /home/hermes/.hermes/exports/obsidian-personal
+bash /home/hermes/.hermes/hermes-post-task-hook.sh "Validated Obsidian shared export folder"
+find /home/hermes/.hermes/exports/obsidian-personal/Imported-from-Hermes -maxdepth 1 -type f
+```
+
+Do not mount `/home/hermes/.hermes/obsidian`. Only the export folder should be
+shared.
 
 ## Validation
 

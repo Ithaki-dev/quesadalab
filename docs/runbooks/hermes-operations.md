@@ -98,10 +98,19 @@ Rules:
 
 - Store only curated facts in Hermes memory.
 - Do not store passwords, API keys, recovery codes, or raw logs.
+- For memory questions, search `/home/hermes/.hermes/obsidian` first.
+- Prefer `10-profile.md`, `20-projects.md`, and `30-operations.md`.
+- Avoid broad filesystem searches unless approved Obsidian notes do not answer.
 - Use the export step to move approved summaries into the personal vault.
 - Use `task-complete` when Hermes finishes an important task and should both
   record the result in `30-operations.md` and export a fresh summary.
 - Use `hermes-post-task-hook.sh` as the canonical post-task hook wrapper.
+
+Validate the memory lookup path:
+
+```bash
+bash /home/hermes/.hermes/hermes-memory.sh snapshot
+```
 
 ## Messaging validation
 

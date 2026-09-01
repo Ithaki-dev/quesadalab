@@ -1,14 +1,15 @@
 # Node Exporter
 
 Node Exporter exposes lightweight host metrics from `docker01` for Prometheus.
-It remains running even when the heavier monitoring group is stopped.
+It remains running permanently. Prometheus is also permanent and scrapes Node
+Exporter for host-level metrics.
 
 ## Runtime
 
 - Stack: `/opt/quesadalab/stacks/node-exporter`
 - Container: `node-exporter`
 - Expected state: running
-- Consumer: Prometheus when the monitoring group is enabled
+- Consumer: Prometheus
 
 ## Validation
 
@@ -21,5 +22,5 @@ docker exec node-exporter wget -qO- \
 head
 ```
 
-An interruption while Prometheus is stopped is expected to create a gap; Node
-Exporter itself does not retain samples.
+Node Exporter does not retain samples. Prometheus is responsible for historical
+retention and currently keeps 30 days with a 5 GB storage cap.

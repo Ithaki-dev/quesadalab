@@ -4,8 +4,8 @@ set -Eeuo pipefail
 IFS=$'\n\t'
 
 readonly IMAGE_REPOSITORY="docker.io/diegosouzapw/omniroute"
-readonly IMAGE_VERSION="3.8.49"
-readonly IMAGE_DIGEST="sha256:92c768c56e2de32c51a0621ef182835018b00b288c9bb235c5c5e4514658c1a1"
+readonly IMAGE_VERSION="3.8.50"
+readonly IMAGE_DIGEST="sha256:085c57adf499a8aaa9f35ccde95c0df9c11bd9ecd18d6c9edbf3b68b8079ba9d"
 readonly IMAGE_REFERENCE="${IMAGE_REPOSITORY}@${IMAGE_DIGEST}"
 readonly EXPECTED_SOURCE="https://github.com/diegosouzapw/OmniRoute"
 
