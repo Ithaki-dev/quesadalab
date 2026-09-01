@@ -1,61 +1,36 @@
 # Operación de servicios bajo demanda
 
-Immich, Jellyfin y el grupo de monitorización pueden permanecer detenidos
-cuando no se utilizan. Home Assistant VM 300 también opera bajo demanda. Esto
-reserva memoria y CPU para Hermes sin eliminar datos, contenedores ni
-configuración.
+Este runbook cubre únicamente servicios que pueden permanecer apagados durante
+la operación normal para reducir consumo de CPU, RAM o I/O.
 
-Detener estos stacks no reduce automaticamente la memoria asignada a la VM 200.
-Hermes ya reside en VM 400 con 4 vCPU y 4 GiB. Antes de cambiar recursos, revise
-la memoria disponible real en Proxmox y la configuración de todas las VM.
+Prometheus y OmniRoute ya no pertenecen al grupo bajo demanda:
 
-## Componentes relacionados
+- Prometheus es permanente para conservar métricas históricas.
+- OmniRoute es permanente porque sirve como gateway de IA para Hermes y clientes
+  OpenAI-compatible.
 
-| Servicio | Stack en `docker01` | Timer local | Timer USB en `quesada` |
-| --- | --- | --- | --- |
-| Immich | `/opt/quesadalab/stacks/immich` | `prepare-immich-backup.timer` | `pull-immich-backups.timer` |
-| Jellyfin | `/opt/quesadalab/stacks/jellyfin` | `backup-jellyfin.timer` | `pull-jellyfin-backups.timer` |
-
-La politica habitual es:
+## Clasificación actual
 
 | Componente | Estado habitual |
-| --- | --- |
-| Uptime Kuma | Siempre activo |
-| Node Exporter | Siempre activo |
-| Grafana | Bajo demanda |
-| Prometheus | Bajo demanda |
-| cAdvisor | Bajo demanda |
+|---|---|
 | Immich | Bajo demanda |
 | Jellyfin | Bajo demanda |
-| Home Assistant VM 300 | Bajo demanda |
-| OmniRoute | Bajo demanda, experimental |
-| Hermes VM 400 | Siempre activo |
+| Grafana | Bajo demanda |
+| cAdvisor | Bajo demanda |
+| Home Assistant VM 300 | En retirada, pendiente de eliminación futura |
+| Prometheus | Siempre activo, no crítico |
+| Node Exporter | Siempre activo, no crítico |
+| OmniRoute | Crítico, siempre activo |
+| Hermes VM 400 | Crítica, siempre activa |
 
-Ponga tambien los monitores correspondientes de Uptime Kuma en mantenimiento.
-No elimine los monitores ni desactive DNS o TLS.
+Ponga los monitores correspondientes de Uptime Kuma en mantenimiento cuando un
+servicio esté apagado intencionalmente. No elimine monitores, DNS ni TLS.
 
-OmniRoute se opera de forma independiente al grupo de monitorizacion y a los
-servicios multimedia:
+## Multimedia bajo demanda
 
-```bash
-docker compose \
-  --project-directory /opt/quesadalab/stacks/omniroute \
-  --env-file /opt/quesadalab/stacks/omniroute/.env \
-  --file /opt/quesadalab/stacks/omniroute/docker-compose.yml \
-  start
+### Apagado planificado
 
-docker compose \
-  --project-directory /opt/quesadalab/stacks/omniroute \
-  --env-file /opt/quesadalab/stacks/omniroute/.env \
-  --file /opt/quesadalab/stacks/omniroute/docker-compose.yml \
-  stop --timeout 60
-```
-
-Mantenga Hermes conectado directamente a OpenRouter durante la evaluacion.
-
-## Apagado planificado
-
-Si desea una ultima copia antes del apagado, ejecute primero en `docker01`:
+Si desea una última copia antes del apagado, ejecute primero en `docker01`:
 
 ```bash
 systemctl start prepare-immich-backup.service
@@ -71,29 +46,9 @@ Luego copie los respaldos preparados al USB desde `quesada`:
 findmnt /mnt/quesadalab-backup
 systemctl start pull-immich-backups.service
 systemctl start pull-jellyfin-backups.service
-
-systemctl show pull-immich-backups.service pull-jellyfin-backups.service \
-  --property=Id --property=Result --property=ExecMainStatus
 ```
 
-Desactive los timers locales en `docker01` para evitar trabajos mientras los
-servicios permanecen apagados:
-
-```bash
-systemctl disable --now \
-  prepare-immich-backup.timer \
-  backup-jellyfin.timer
-```
-
-Desactive los pulls correspondientes en `quesada`:
-
-```bash
-systemctl disable --now \
-  pull-immich-backups.timer \
-  pull-jellyfin-backups.timer
-```
-
-Finalmente, detenga los stacks en `docker01`:
+Detenga los stacks en `docker01`:
 
 ```bash
 docker compose \
@@ -109,33 +64,12 @@ docker compose \
   stop --timeout 120
 ```
 
-Use `stop`, no `down --volumes`: los volumenes y datos persistentes deben
-conservarse. Mientras dure el mantenimiento, Traefik puede responder 502 o 503
-solo para esos dos nombres.
+Use `stop`, no `down --volumes`. Los volúmenes y datos persistentes deben
+conservarse.
 
-Compruebe el resultado:
+### Encendido planificado
 
-```bash
-docker ps --all \
-  --filter name=immich \
-  --filter name=jellyfin \
-  --format 'table {{.Names}}\t{{.Status}}'
-
-free -h
-docker stats --no-stream
-
-curl --silent --show-error --output /dev/null \
-  --write-out 'Nextcloud HTTP %{http_code}\n' \
-  https://nextcloud.lab/status.php
-
-curl --silent --show-error --output /dev/null \
-  --write-out 'Vaultwarden HTTP %{http_code}\n' \
-  https://vault.lab/alive
-```
-
-## Encendido planificado
-
-Primero confirme en `docker01` que ambos discos estan montados:
+Primero confirme en `docker01` que los discos necesarios están montados:
 
 ```bash
 findmnt /srv/immich-data
@@ -159,10 +93,7 @@ docker compose \
   start
 ```
 
-Si cambiaron Compose, variables o imagenes, use `./deploy.sh immich` o
-`./deploy.sh jellyfin` desde `/opt/quesadalab-repo` en lugar de `start`.
-
-Espere y valide:
+Valide:
 
 ```bash
 docker inspect immich-server jellyfin \
@@ -176,99 +107,21 @@ curl --silent --show-error --output /dev/null \
   https://jellyfin.lab/health
 ```
 
-Reactive los timers locales en `docker01`:
+## Observabilidad bajo demanda
 
-```bash
-systemctl enable --now \
-  prepare-immich-backup.timer \
-  backup-jellyfin.timer
-```
+Prometheus y Node Exporter permanecen activos. Grafana y cAdvisor se encienden
+solo cuando se requiere análisis visual o métricas detalladas de contenedores.
 
-Reactive los timers USB en `quesada`:
+El target `cadvisor:8080` permanece en Prometheus. Cuando cAdvisor esté apagado
+intencionalmente, Prometheus mostrará ese target `DOWN`; esa condición no debe
+confundirse con una falla de Prometheus.
 
-```bash
-systemctl enable --now \
-  pull-immich-backups.timer \
-  pull-jellyfin-backups.timer
-```
-
-Quite el mantenimiento en Uptime Kuma solamente despues de obtener HTTP 200 y
-estado saludable en ambos servicios.
-
-## Revision de recursos
-
-En `docker01`:
-
-```bash
-free -h
-docker stats --no-stream
-```
-
-En `quesada`:
-
-```bash
-free -h
-qm config 200 | grep -E '^(memory|balloon):'
-```
-
-La memoria liberada dentro de `docker01` aumenta la disponibilidad del host,
-pero la RAM de Hermes está reservada en una VM separada. Tome decisiones con
-`MemAvailable`, swap y el inventario completo de VM, no solo con métricas de
-contenedores.
-
-## Grupo de monitorizacion bajo demanda
-
-Node Exporter permanece activo para mantener disponible el endpoint ligero de
-metricas del host. Grafana, Prometheus y cAdvisor se administran juntos como el
-grupo `monitoring`. Cuando Prometheus esta apagado no se almacenan muestras y el
-periodo correspondiente aparecera vacio en Grafana.
-
-Para detener el grupo en `docker01`, detenga primero la interfaz y la base de
-metricas, y luego el recolector de contenedores:
-
-```bash
-docker compose \
-  --project-directory /opt/quesadalab/stacks/grafana \
-  --env-file /opt/quesadalab/stacks/grafana/.env \
-  --file /opt/quesadalab/stacks/grafana/docker-compose.yml \
-  stop --timeout 60
-
-docker compose \
-  --project-directory /opt/quesadalab/stacks/prometheus \
-  --file /opt/quesadalab/stacks/prometheus/docker-compose.yml \
-  stop --timeout 120
-
-docker compose \
-  --project-directory /opt/quesadalab/stacks/cadvisor \
-  --file /opt/quesadalab/stacks/cadvisor/docker-compose.yml \
-  stop --timeout 60
-```
-
-Compruebe que Node Exporter continua en ejecucion:
-
-```bash
-docker ps --all \
-  --filter name=grafana \
-  --filter name=prometheus \
-  --filter name=cadvisor \
-  --filter name=node-exporter \
-  --format 'table {{.Names}}\t{{.Status}}'
-
-docker inspect node-exporter \
-  --format 'name={{.Name}} status={{.State.Status}}'
-```
-
-Para iniciar el grupo, use el orden recolector, base de metricas e interfaz:
+### Encender Grafana y cAdvisor
 
 ```bash
 docker compose \
   --project-directory /opt/quesadalab/stacks/cadvisor \
   --file /opt/quesadalab/stacks/cadvisor/docker-compose.yml \
-  start
-
-docker compose \
-  --project-directory /opt/quesadalab/stacks/prometheus \
-  --file /opt/quesadalab/stacks/prometheus/docker-compose.yml \
   start
 
 docker compose \
@@ -278,30 +131,39 @@ docker compose \
   start
 ```
 
-Valide el arranque sin depender de que los contenedores tengan healthcheck:
+Valide:
 
 ```bash
-docker ps \
-  --filter name=grafana \
-  --filter name=prometheus \
-  --filter name=cadvisor \
-  --filter name=node-exporter \
-  --format 'table {{.Names}}\t{{.Status}}'
+curl --silent --show-error --output /dev/null \
+  --write-out 'Prometheus HTTP %{http_code}\n' \
+  http://prometheus.lab/-/ready
 
 curl --silent --show-error --output /dev/null \
   --write-out 'Grafana HTTP %{http_code}\n' \
   http://grafana.lab/login
-
-curl --silent --show-error --output /dev/null \
-  --write-out 'Prometheus HTTP %{http_code}\n' \
-  http://prometheus.lab/-/ready
 ```
 
-Use `stop`, nunca `down --volumes`, para conservar la base TSDB de Prometheus,
-los dashboards y la configuracion de Grafana. Estos tres servicios no requieren
-desactivar timers porque actualmente no poseen trabajos systemd programados.
+### Apagar Grafana y cAdvisor
 
-## Home Assistant bajo demanda
+```bash
+docker compose \
+  --project-directory /opt/quesadalab/stacks/grafana \
+  --env-file /opt/quesadalab/stacks/grafana/.env \
+  --file /opt/quesadalab/stacks/grafana/docker-compose.yml \
+  stop --timeout 60
+
+docker compose \
+  --project-directory /opt/quesadalab/stacks/cadvisor \
+  --file /opt/quesadalab/stacks/cadvisor/docker-compose.yml \
+  stop --timeout 60
+```
+
+No detenga Prometheus como parte de este flujo.
+
+## Home Assistant en retirada
+
+VM 300 `homeassistant` se conserva temporalmente para referencia y posible
+recuperación, pero está en retirada y pendiente de eliminación futura.
 
 Antes de iniciar VM 300:
 
@@ -321,16 +183,5 @@ curl --silent --show-error --output /dev/null \
   https://homeassistant.lab/
 ```
 
-Quite el mantenimiento del monitor solo después de obtener HTTP 200. Para
-devolver recursos a Hermes, apague Home Assistant desde el sistema invitado,
-espere `status: stopped` y mantenga `onboot=0`:
-
-```bash
-qm shutdown 300 --timeout 180
-qm status 300
-qm set 300 --onboot 0
-```
-
-Pause nuevamente el monitor de Uptime Kuma. El job `homeassistant-daily` debe
-permanecer deshabilitado durante apagados prolongados; haga un respaldo manual
-antes de cambios importantes.
+Mantenga `onboot=0`. No elimine la VM, DNS, TLS ni configuración hasta que la
+retirada sea aprobada explícitamente.
