@@ -1,21 +1,25 @@
 # cAdvisor
 
-cAdvisor exports Docker container resource metrics to Prometheus. It belongs
-to the on-demand monitoring group together with Prometheus and Grafana.
+cAdvisor exports Docker container resource metrics to Prometheus. It remains
+an on-demand service. Prometheus is permanent; Grafana remains on demand.
 
 ## Runtime
 
 - Stack: `/opt/quesadalab/stacks/cadvisor`
 - Container: `cadvisor`
-- Expected state: stopped when monitoring is not needed
+- Expected state: stopped when detailed container metrics are not needed
 - Persistent application data: none
 
 The container requires read-only access to host and Docker runtime paths.
 Those mounts are privileged observation surfaces and must not be broadened.
 
+Prometheus keeps the `cadvisor:8080` target configured. When cAdvisor is
+intentionally stopped, that target appears `DOWN`; treat it as expected
+on-demand state, not as a Prometheus failure.
+
 ## Lifecycle
 
-Start cAdvisor before Prometheus:
+Start cAdvisor when detailed container metrics are needed:
 
 ```bash
 docker compose \
@@ -24,7 +28,7 @@ docker compose \
   start
 ```
 
-Stop it after Prometheus:
+Stop it after the diagnostic window:
 
 ```bash
 docker compose \
